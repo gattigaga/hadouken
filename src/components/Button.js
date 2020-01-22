@@ -19,10 +19,15 @@ const Content = styled.button`
         .brighten(0.3)
         .hex()};
   }
+
+  &:disabled {
+    background: #eee;
+    color: #aaa;
+  }
 `;
 
-const Button = ({ label, color, onClick }) => (
-  <Content color={color} onClick={onClick}>
+const Button = ({ label, color, onClick, isDisabled }) => (
+  <Content color={color} onClick={onClick} disabled={isDisabled}>
     {label}
   </Content>
 );
@@ -30,7 +35,8 @@ const Button = ({ label, color, onClick }) => (
 Button.propTypes = {
   label: PropTypes.string,
   color: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  isDisabled: PropTypes.bool
 };
 
 Button.defaultProps = {

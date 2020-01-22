@@ -20,14 +20,14 @@ const Label = styled.p`
   margin: auto;
 `;
 
-const CreateBoard = ({ onPress }) => (
-  <Container onPress={onPress}>
+const CreateBoard = ({ onClick }) => (
+  <Container onClick={onClick}>
     <Label>Create New Board</Label>
   </Container>
 );
 
 CreateBoard.propTypes = {
-  onPress: PropTypes.func
+  onClick: PropTypes.func
 };
 
 export default CreateBoard;

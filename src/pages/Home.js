@@ -48,7 +48,7 @@ const Home = () => {
         <Title>Hadouken</Title>
         <BoardList>
           {boards.map(board => (
-            <Board id={board.id} name={board.name} />
+            <Board key={board.id} name={board.name} to={board.slug} />
           ))}
           <CreateBoard onClick={() => setIsCreateOpen(true)} />
         </BoardList>

@@ -26,13 +26,19 @@ const Content = styled.button`
   }
 `;
 
-const Button = ({ label, color, onClick, isDisabled }) => (
-  <Content color={color} onClick={onClick} disabled={isDisabled}>
+const Button = ({ className, label, color, onClick, isDisabled }) => (
+  <Content
+    className={className}
+    color={color}
+    onClick={onClick}
+    disabled={isDisabled}
+  >
     {label}
   </Content>
 );
 
 Button.propTypes = {
+  className: PropTypes.string,
   label: PropTypes.string,
   color: PropTypes.string,
   onClick: PropTypes.func,

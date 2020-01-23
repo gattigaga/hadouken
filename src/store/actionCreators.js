@@ -7,6 +7,9 @@ import {
   CREATE_LIST,
   UPDATE_LIST,
   DELETE_LIST,
+  CREATE_CARD,
+  UPDATE_CARD,
+  DELETE_CARD
 } from "./actions";
 
 export const createBoard = name => {
@@ -71,3 +74,39 @@ export const deleteList = id => ({
   payload: id
 });
 
+export const createCard = ({ listId, name, description }) => {
+  const id = uuid();
+  const timestamp = Date.now();
+
+  return {
+    type: CREATE_CARD,
+    payload: {
+      id,
+      listId,
+      name,
+      description,
+      timestamp
+    }
+  };
+};
+
+export const updateCard = (id, data) => {
+  const validData = {};
+  const dataKeys = ["listId", "name", "description", "index"];
+
+  dataKeys.forEach(key => {
+    if (!data[key]) return;
+
+    validData[key] = data[key];
+  });
+
+  return {
+    type: UPDATE_CARD,
+    payload: { id, data: validData }
+  };
+};
+
+export const deleteCard = id => ({
+  type: DELETE_CARD,
+  payload: id
+});

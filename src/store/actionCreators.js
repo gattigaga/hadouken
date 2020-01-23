@@ -9,7 +9,10 @@ import {
   DELETE_LIST,
   CREATE_CARD,
   UPDATE_CARD,
-  DELETE_CARD
+  DELETE_CARD,
+  DELETE_CHECK,
+  CREATE_CHECK,
+  UPDATE_CHECK
 } from "./actions";
 
 export const createBoard = name => {
@@ -108,5 +111,43 @@ export const updateCard = (id, data) => {
 
 export const deleteCard = id => ({
   type: DELETE_CARD,
+  payload: id
+});
+
+export const createCheck = ({ cardId, label }) => {
+  const id = uuid();
+  const timestamp = Date.now();
+  const isChecked = false;
+
+  return {
+    type: CREATE_CHECK,
+    payload: {
+      id,
+      cardId,
+      label,
+      isChecked,
+      timestamp
+    }
+  };
+};
+
+export const updateCheck = (id, data) => {
+  const validData = {};
+  const dataKeys = ["label", "isChecked", "index"];
+
+  dataKeys.forEach(key => {
+    if (!data[key]) return;
+
+    validData[key] = data[key];
+  });
+
+  return {
+    type: UPDATE_CHECK,
+    payload: { id, data: validData }
+  };
+};
+
+export const deleteCheck = id => ({
+  type: DELETE_CHECK,
   payload: id
 });

@@ -77,9 +77,10 @@ export const deleteList = id => ({
   payload: id
 });
 
-export const createCard = ({ listId, name, description }) => {
+export const createCard = ({ listId, name }) => {
   const id = uuid();
   const timestamp = Date.now();
+  const description = "";
 
   return {
     type: CREATE_CARD,

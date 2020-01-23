@@ -4,7 +4,10 @@ import {
   DELETE_BOARD,
   CREATE_LIST,
   UPDATE_LIST,
-  DELETE_LIST
+  DELETE_LIST,
+  CREATE_CARD,
+  UPDATE_CARD,
+  DELETE_CARD
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -52,6 +55,34 @@ export const lists = (state = [], action) => {
       });
 
     case DELETE_LIST:
+      return state.filter(item => item.id !== payload);
+
+    default:
+      return state;
+  }
+};
+
+export const cards = (state = [], action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case CREATE_CARD:
+      payload.index = state.filter(
+        item => item.listId === payload.listId
+      ).length;
+
+      return [...state, payload];
+
+    case UPDATE_CARD:
+      return state.map(item => {
+        if (item.id === payload.id) {
+          return { ...item, ...payload.data };
+        }
+
+        return item;
+      });
+
+    case DELETE_CARD:
       return state.filter(item => item.id !== payload);
 
     default:

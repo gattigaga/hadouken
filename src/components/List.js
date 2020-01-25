@@ -118,22 +118,60 @@ const List = ({
   name,
   children,
   isWillAdd,
+  isWillUpdateName,
+  onNameUpdated,
+  onClickName,
   onClickClose,
   onClickAdd,
   onClickApplyAdd,
   onClickCancelAdd
 }) => {
   const [newCard, setNewCard] = useState("");
+  const [newName, setNewName] = useState(name);
 
   useEffect(() => {
     setNewCard("");
   }, [isWillAdd]);
 
+  useEffect(() => {
+    const isApplied = !isWillUpdateName && name !== newName;
+
+    if (!isApplied) return;
+
+    onNameUpdated(newName);
+
+    if (newName) return;
+
+    setNewName(name);
+  }, [isWillUpdateName, newName]);
+
   return (
     <Container>
       <Header>
-        <Name>{name}</Name>
-        <CloseButton type="button" onClick={onClickClose}>
+        {isWillUpdateName ? (
+          <Input
+            type="text"
+            value={newName}
+            onClick={event => event.stopPropagation()}
+            onChange={event => setNewName(event.target.value)}
+          />
+        ) : (
+          <Name
+            onClick={event => {
+              event.stopPropagation();
+              onClickName();
+            }}
+          >
+            {name}
+          </Name>
+        )}
+        <CloseButton
+          type="button"
+          onClick={event => {
+            event.stopPropagation();
+            onClickClose();
+          }}
+        >
           <Icon icon={faTimes} />
         </CloseButton>
       </Header>
@@ -142,6 +180,7 @@ const List = ({
         {isWillAdd && (
           <NewCard
             placeholder="Enter a name for this card..."
+            onClick={event => event.stopPropagation()}
             onChange={event => setNewCard(event.target.value)}
           >
             {newCard}
@@ -153,12 +192,28 @@ const List = ({
           <>
             <ApplyButton
               label="Apply"
-              onClick={() => onClickApplyAdd(newCard)}
+              onClick={event => {
+                event.stopPropagation();
+                onClickApplyAdd(newCard);
+              }}
             />
-            <Button label="Cancel" color="#e74c3c" onClick={onClickCancelAdd} />
+            <Button
+              label="Cancel"
+              color="#e74c3c"
+              onClick={event => {
+                event.stopPropagation();
+                onClickCancelAdd();
+              }}
+            />
           </>
         ) : (
-          <FooterButton type="button" onClick={onClickAdd}>
+          <FooterButton
+            type="button"
+            onClick={event => {
+              event.stopPropagation();
+              onClickAdd();
+            }}
+          >
             <Icon icon={faPlus} />
             <Text>Add new card</Text>
           </FooterButton>
@@ -172,6 +227,9 @@ List.propTypes = {
   name: PropTypes.string,
   children: PropTypes.array,
   isWillAdd: PropTypes.bool,
+  isWillUpdateName: PropTypes.bool,
+  onNameUpdated: PropTypes.func,
+  onClickName: PropTypes.func,
   onClickClose: PropTypes.func,
   onClickAdd: PropTypes.func,
   onClickApplyAdd: PropTypes.func,

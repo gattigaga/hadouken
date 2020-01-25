@@ -54,6 +54,12 @@ const machine = Machine({
           actions: assign({
             listId: (_, event) => event.listId
           })
+        },
+        UPDATE_LIST_NAME: {
+          target: "updateListName",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
         }
       }
     },
@@ -62,6 +68,12 @@ const machine = Machine({
         IDLE: "idle",
         CREATE_CARD: {
           target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        },
+        UPDATE_LIST_NAME: {
+          target: "updateListName",
           actions: assign({
             listId: (_, event) => event.listId
           })
@@ -74,6 +86,30 @@ const machine = Machine({
         CREATE_LIST: "createList",
         CREATE_CARD: {
           target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        },
+        UPDATE_LIST_NAME: {
+          target: "updateListName",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        }
+      }
+    },
+    updateListName: {
+      on: {
+        IDLE: "idle",
+        CREATE_LIST: "createList",
+        CREATE_CARD: {
+          target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        },
+        UPDATE_LIST_NAME: {
+          target: "updateListName",
           actions: assign({
             listId: (_, event) => event.listId
           })
@@ -96,7 +132,7 @@ const BoardDetail = () => {
   if (!board) return null;
 
   return (
-    <Container>
+    <Container onClick={() => send("IDLE")}>
       <Helmet>
         <title>Hadouken | {board.name}</title>
       </Helmet>
@@ -109,6 +145,14 @@ const BoardDetail = () => {
               <List
                 key={list.id}
                 name={list.name}
+                onNameUpdated={newListName => {
+                  if (!newListName) return;
+
+                  dispatch(updateList(list.id, { name: newListName }));
+                }}
+                onClickName={() =>
+                  send("UPDATE_LIST_NAME", { listId: list.id })
+                }
                 onClickClose={() => {
                   dispatch(deleteList(list.id));
                 }}
@@ -127,6 +171,10 @@ const BoardDetail = () => {
                 onClickCancelAdd={() => send("IDLE")}
                 isWillAdd={
                   current.matches("createCard") &&
+                  current.context.listId === list.id
+                }
+                isWillUpdateName={
+                  current.matches("updateListName") &&
                   current.context.listId === list.id
                 }
               >

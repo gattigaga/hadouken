@@ -3,11 +3,18 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
+import { Machine, assign } from "xstate";
+import { useMachine } from "@xstate/react";
 
 import List from "../components/List";
 import Card from "../components/Card";
 import CreateList from "../components/CreateList";
-import { createList, deleteList, createCard, updateList } from "../store/actionCreators";
+import {
+  createList,
+  deleteList,
+  createCard,
+  updateList
+} from "../store/actionCreators";
 
 const Container = styled.div`
   width: 100vw;
@@ -35,14 +42,54 @@ const ListWrapper = styled.div`
   align-items: flex-start;
 `;
 
+const machine = Machine({
+  id: "machine",
+  initial: "idle",
+  states: {
+    idle: {
+      on: {
+        CREATE_LIST: "createList",
+        CREATE_CARD: {
+          target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        }
+      }
+    },
+    createList: {
+      on: {
+        IDLE: "idle",
+        CREATE_CARD: {
+          target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        }
+      }
+    },
+    createCard: {
+      on: {
+        IDLE: "idle",
+        CREATE_LIST: "createList",
+        CREATE_CARD: {
+          target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        }
+      }
+    }
+  }
+});
+
 const BoardDetail = () => {
   const boards = useSelector(state => state.boards);
   const lists = useSelector(state => state.lists);
   const cards = useSelector(state => state.cards);
   const dispatch = useDispatch();
   const { boardSlug } = useParams();
-  const [willAdd, setWillAdd] = useState(null);
-  const [activeListId, setActiveListId] = useState(null);
+  const [current, send] = useMachine(machine);
 
   const board = boards.find(board => board.slug === boardSlug);
 
@@ -65,20 +112,23 @@ const BoardDetail = () => {
                 onClickClose={() => {
                   dispatch(deleteList(list.id));
                 }}
-                onClickAdd={() => {
-                  setWillAdd("card");
-                  setActiveListId(list.id);
-                }}
+                onClickAdd={() => send("CREATE_CARD", { listId: list.id })}
                 onClickApplyAdd={cardName => {
-                  dispatch(createCard({ listId: list.id, name: cardName }));
-                  setWillAdd(null);
-                  setActiveListId(null);
+                  if (!cardName) return;
+
+                  const action = createCard({
+                    listId: list.id,
+                    name: cardName
+                  });
+
+                  dispatch(action);
+                  send("IDLE");
                 }}
-                onClickCancelAdd={() => {
-                  setWillAdd(null);
-                  setActiveListId(null);
-                }}
-                isWillAdd={willAdd === "card" && activeListId === list.id}
+                onClickCancelAdd={() => send("IDLE")}
+                isWillAdd={
+                  current.matches("createCard") &&
+                  current.context.listId === list.id
+                }
               >
                 {cards
                   .filter(card => card.listId === list.id)
@@ -88,13 +138,20 @@ const BoardDetail = () => {
               </List>
             ))}
           <CreateList
-            onClickAdd={() => setWillAdd("list")}
+            onClickAdd={() => send("CREATE_LIST")}
             onClickApplyAdd={listName => {
-              dispatch(createList({ boardId: board.id, name: listName }));
-              setWillAdd(null);
+              if (!listName) return;
+
+              const action = createList({
+                boardId: board.id,
+                name: listName
+              });
+
+              dispatch(action);
+              send("IDLE");
             }}
-            onClickCancelAdd={() => setWillAdd(null)}
-            isWillAdd={willAdd === "list"}
+            onClickCancelAdd={() => send("IDLE")}
+            isWillAdd={current.matches("createList")}
           />
         </ListWrapper>
       </Wrapper>

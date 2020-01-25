@@ -181,7 +181,11 @@ const BoardDetail = () => {
                 {cards
                   .filter(card => card.listId === list.id)
                   .map(card => (
-                    <Card key={card.id} name={card.name} />
+                    <Card
+                      key={card.id}
+                      name={card.name}
+                      to={`${board.slug}/${card.slug}`}
+                    />
                   ))}
               </List>
             ))}

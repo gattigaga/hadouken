@@ -79,6 +79,7 @@ export const deleteList = id => ({
 
 export const createCard = ({ listId, name }) => {
   const id = uuid();
+  const slug = name.toLowerCase().replace(" ", "-") + `-${id}`;
   const timestamp = Date.now();
   const description = "";
 
@@ -87,6 +88,7 @@ export const createCard = ({ listId, name }) => {
     payload: {
       id,
       listId,
+      slug,
       name,
       description,
       timestamp

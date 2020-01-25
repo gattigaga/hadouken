@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 
 import Home from "./pages/Home";
 import BoardDetail from "./pages/BoardDetail";
+import CardDetail from "./pages/CardDetail";
 import { store } from "./store/store";
 
 const App = () => (
@@ -17,6 +18,9 @@ const App = () => (
           <Home />
         </Route>
       </Switch>
+      <Route path="/:boardSlug/:cardSlug">
+        <CardDetail />
+      </Route>
     </Router>
   </Provider>
 );

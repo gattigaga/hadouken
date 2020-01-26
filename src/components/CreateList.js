@@ -101,7 +101,12 @@ const CreateList = ({
       </Footer>
     </List>
   ) : (
-    <Container onClick={onClickAdd}>
+    <Container
+      onClick={event => {
+        event.stopPropagation();
+        onClickAdd();
+      }}
+    >
       <FontAwesomeIcon icon={faPlus} size={14} />
       <Label>Add new list</Label>
     </Container>

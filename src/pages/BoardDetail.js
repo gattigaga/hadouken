@@ -185,6 +185,7 @@ const BoardDetail = () => {
                       key={card.id}
                       name={card.name}
                       to={`${board.slug}/${card.slug}`}
+                      hasDescription={card.description}
                     />
                   ))}
               </List>

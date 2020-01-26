@@ -92,6 +92,7 @@ const CreateList = ({
           type="text"
           placeholder="Enter list name..."
           value={name}
+          onClick={event => event.stopPropagation()}
           onChange={event => setName(event.target.value)}
         />
       </Header>

@@ -209,7 +209,10 @@ const CardDetail = () => {
   return (
     <Modal
       style={modalStyles}
-      onRequestClose={history.goBack}
+      onRequestClose={() => {
+        send("IDLE");
+        history.goBack();
+      }}
       contentLabel="Card Detail"
       isOpen
     >
@@ -239,7 +242,13 @@ const CardDetail = () => {
               in list <strong>{list.name}</strong>
             </ListName>
           </NameWrapper>
-          <CloseIcon icon={faTimes} onClick={history.goBack} />
+          <CloseIcon
+            icon={faTimes}
+            onClick={() => {
+              send("IDLE");
+              history.goBack();
+            }}
+          />
         </Header>
         <Section>
           <SectionHeader>

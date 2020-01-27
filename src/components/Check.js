@@ -27,6 +27,7 @@ const Label = styled.p`
   line-height: 1.2em;
   cursor: pointer;
   width: 100%;
+  text-decoration: ${({ isChecked }) => (isChecked ? "line-through" : "none")};
 `;
 
 const Checkbox = styled.input`
@@ -136,6 +137,7 @@ const Check = ({
               event.stopPropagation();
               onClickLabel();
             }}
+            isChecked={isChecked}
           >
             {label}
           </Label>

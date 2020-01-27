@@ -123,6 +123,7 @@ const BoardDetail = () => {
   const boards = useSelector(state => state.boards);
   const lists = useSelector(state => state.lists);
   const cards = useSelector(state => state.cards);
+  const checks = useSelector(state => state.checks);
   const dispatch = useDispatch();
   const { boardSlug } = useParams();
   const [current, send] = useMachine(machine);
@@ -180,14 +181,27 @@ const BoardDetail = () => {
               >
                 {cards
                   .filter(card => card.listId === list.id)
-                  .map(card => (
-                    <Card
-                      key={card.id}
-                      name={card.name}
-                      to={`${board.slug}/${card.slug}`}
-                      hasDescription={card.description}
-                    />
-                  ))}
+                  .map(card => {
+                    const currentChecks = checks.filter(
+                      check => check.cardId === card.id
+                    );
+
+                    const totalChecked = currentChecks.filter(
+                      check => !!check.isChecked
+                    ).length;
+
+                    return (
+                      <Card
+                        key={card.id}
+                        name={card.name}
+                        to={`${board.slug}/${card.slug}`}
+                        totalChecked={totalChecked}
+                        maxChecklist={currentChecks.length}
+                        hasDescription={card.description}
+                        hasChecklist={!!currentChecks.length}
+                      />
+                    );
+                  })}
               </List>
             ))}
           <CreateList

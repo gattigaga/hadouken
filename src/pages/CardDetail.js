@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import Modal from "react-modal";
 import chroma from "chroma-js";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faIdCard, faList } from "@fortawesome/free-solid-svg-icons";
-import { Machine } from "xstate";
+import {
+  faTimes,
+  faIdCard,
+  faList,
+  faCheckSquare
+} from "@fortawesome/free-solid-svg-icons";
+import { Machine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 
 import Button from "../components/Button";
-import { updateCard } from "../store/actionCreators";
+import Check from "../components/Check";
+import Progress from "../components/Progress";
+import {
+  updateCard,
+  createCheck,
+  updateCheck,
+  deleteCheck
+} from "../store/actionCreators";
 
 const Container = styled.div`
   width: 640px;
@@ -108,7 +119,7 @@ const Input = styled.input`
 
 const Textarea = styled.textarea`
   width: 100%;
-  height: 96px;
+  height: ${({ height }) => height || 96}px;
   font-family: "Roboto";
   font-size: 14px;
   outline: none;
@@ -140,11 +151,16 @@ const ApplyButton = styled(Button)`
 `;
 
 const Section = styled.div`
-  margin-bottom: 24px;
+  margin-top: 36px;
 `;
 
-const DescriptionWrapper = styled.div`
+const EditWrapper = styled.div`
   padding-left: 32px;
+`;
+
+const AddCheckButton = styled(Button)`
+  margin-top: 8px;
+  margin-left: 32px;
 `;
 
 const modalStyles = {
@@ -167,19 +183,67 @@ const machine = Machine({
     idle: {
       on: {
         UPDATE_CARD_NAME: "updateCardName",
-        UPDATE_CARD_DESCRIPTION: "updateCardDescription"
+        UPDATE_CARD_DESCRIPTION: "updateCardDescription",
+        CREATE_CHECK: "createCheck",
+        UPDATE_CHECK: {
+          target: "updateCheck",
+          actions: assign({
+            checkId: (_, event) => event.checkId
+          })
+        }
       }
     },
     updateCardName: {
       on: {
         IDLE: "idle",
-        UPDATE_CARD_DESCRIPTION: "updateCardDescription"
+        UPDATE_CARD_DESCRIPTION: "updateCardDescription",
+        CREATE_CHECK: "createCheck",
+        UPDATE_CHECK: {
+          target: "updateCheck",
+          actions: assign({
+            checkId: (_, event) => event.checkId
+          })
+        }
       }
     },
     updateCardDescription: {
       on: {
         IDLE: "idle",
-        UPDATE_CARD_NAME: "updateCardName"
+        UPDATE_CARD_NAME: "updateCardName",
+        CREATE_CHECK: "createCheck",
+        UPDATE_CHECK: {
+          target: "updateCheck",
+          actions: assign({
+            checkId: (_, event) => event.checkId
+          })
+        }
+      }
+    },
+    createCheck: {
+      on: {
+        IDLE: "idle",
+        UPDATE_CARD_NAME: "updateCardName",
+        UPDATE_CARD_DESCRIPTION: "updateCardDescription",
+        UPDATE_CHECK: {
+          target: "updateCheck",
+          actions: assign({
+            checkId: (_, event) => event.checkId
+          })
+        }
+      }
+    },
+    updateCheck: {
+      on: {
+        IDLE: "idle",
+        UPDATE_CARD_NAME: "updateCardName",
+        UPDATE_CARD_DESCRIPTION: "updateCardDescription",
+        CREATE_CHECK: "createCheck",
+        UPDATE_CHECK: {
+          target: "updateCheck",
+          actions: assign({
+            checkId: (_, event) => event.checkId
+          })
+        }
       }
     }
   }
@@ -188,6 +252,7 @@ const machine = Machine({
 const CardDetail = () => {
   const cards = useSelector(state => state.cards);
   const lists = useSelector(state => state.lists);
+  const checks = useSelector(state => state.checks);
   const dispatch = useDispatch();
   const { cardSlug } = useParams();
   const history = useHistory();
@@ -195,9 +260,14 @@ const CardDetail = () => {
 
   const card = cards.find(card => card.slug === cardSlug);
   const list = lists.find(list => list.id === card.listId);
+  const currentChecks = checks.filter(check => check.cardId === card.id);
+  const totalChecked = currentChecks.filter(check => !!check.isChecked).length;
+  const divide = totalChecked / currentChecks.length;
+  const progress = Number.isNaN(divide) ? 0 : divide * 100;
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [newCheck, setNewCheck] = useState("");
 
   useEffect(() => {
     setNewName(card ? card.name : "");
@@ -255,7 +325,7 @@ const CardDetail = () => {
             <Icon icon={faList} />
             <Subtitle>Description</Subtitle>
           </SectionHeader>
-          <DescriptionWrapper>
+          <EditWrapper>
             {current.matches("updateCardDescription") ? (
               <>
                 <Textarea
@@ -297,7 +367,80 @@ const CardDetail = () => {
                 {card.description || "Enter a description..."}
               </Description>
             )}
-          </DescriptionWrapper>
+          </EditWrapper>
+        </Section>
+        <Section>
+          <SectionHeader>
+            <Icon icon={faCheckSquare} />
+            <Subtitle>Checklist</Subtitle>
+          </SectionHeader>
+          <Progress value={progress} />
+          {currentChecks.map(check => (
+            <Check
+              key={check.id}
+              label={check.label}
+              isChecked={check.isChecked}
+              onClickCheck={() => {
+                dispatch(
+                  updateCheck(check.id, { isChecked: !check.isChecked })
+                );
+              }}
+              onClickLabel={() => send("UPDATE_CHECK", { checkId: check.id })}
+              onClickApplyUpdate={newLabel => {
+                dispatch(updateCheck(check.id, { label: newLabel }));
+                send("IDLE");
+              }}
+              onClickCancelUpdate={() => {
+                setNewCheck("");
+                send("IDLE");
+              }}
+              onClickDelete={() => dispatch(deleteCheck(check.id))}
+              isWillUpdateLabel={
+                current.matches("updateCheck") &&
+                current.context.checkId === check.id
+              }
+            />
+          ))}
+          {current.matches("createCheck") ? (
+            <EditWrapper>
+              <Textarea
+                height={48}
+                placeholder="Add an item"
+                value={newCheck}
+                onClick={event => event.stopPropagation()}
+                onChange={event => setNewCheck(event.target.value)}
+              />
+              <Row>
+                <ApplyButton
+                  label="Apply"
+                  onClick={event => {
+                    event.stopPropagation();
+                    dispatch(createCheck({ cardId: card.id, label: newCheck }));
+                    setNewCheck("");
+                    send("IDLE");
+                  }}
+                />
+                <Button
+                  label="Cancel"
+                  color="#e74c3c"
+                  onClick={event => {
+                    event.stopPropagation();
+                    setNewCheck("");
+                    send("IDLE");
+                  }}
+                />
+              </Row>
+            </EditWrapper>
+          ) : (
+            <AddCheckButton
+              label="Add an item"
+              color="#34495e"
+              onClick={event => {
+                event.stopPropagation();
+                send("CREATE_CHECK");
+              }}
+            />
+          )}
         </Section>
       </Container>
     </Modal>

@@ -61,7 +61,7 @@ export const updateList = (id, data) => {
   const dataKeys = ["name", "index"];
 
   dataKeys.forEach(key => {
-    if (!data[key]) return;
+    if (data[key] === undefined) return;
 
     validData[key] = data[key];
   });
@@ -101,7 +101,7 @@ export const updateCard = (id, data) => {
   const dataKeys = ["listId", "name", "description", "index"];
 
   dataKeys.forEach(key => {
-    if (!data[key]) return;
+    if (data[key] === undefined) return;
 
     validData[key] = data[key];
   });
@@ -139,7 +139,7 @@ export const updateCheck = (id, data) => {
   const dataKeys = ["label", "isChecked", "index"];
 
   dataKeys.forEach(key => {
-    if (!data[key]) return;
+    if (data[key] === undefined) return;
 
     validData[key] = data[key];
   });

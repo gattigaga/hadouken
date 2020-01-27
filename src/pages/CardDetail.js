@@ -21,7 +21,8 @@ import {
   updateCard,
   createCheck,
   updateCheck,
-  deleteCheck
+  deleteCheck,
+  deleteCard
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -161,6 +162,12 @@ const EditWrapper = styled.div`
 const AddCheckButton = styled(Button)`
   margin-top: 8px;
   margin-left: 32px;
+`;
+
+const DeleteButton = styled.span`
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
 `;
 
 const modalStyles = {
@@ -309,7 +316,16 @@ const CardDetail = () => {
               </Name>
             )}
             <ListName>
-              in list <strong>{list.name}</strong>
+              in list <strong>{list.name}</strong>{" "}
+              <DeleteButton
+                onClick={event => {
+                  event.stopPropagation();
+                  history.goBack();
+                  setTimeout(() => dispatch(deleteCard(card.id)), 50);
+                }}
+              >
+                (Delete)
+              </DeleteButton>
             </ListName>
           </NameWrapper>
           <CloseIcon

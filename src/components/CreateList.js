@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
@@ -80,25 +80,58 @@ const CreateList = ({
   onClickCancelAdd
 }) => {
   const [name, setName] = useState("");
+  const refInput = useRef(null);
 
   useEffect(() => {
     setName("");
+
+    if (isWillAdd) {
+      refInput.current.focus();
+    }
   }, [isWillAdd]);
 
   return isWillAdd ? (
     <List>
       <Header>
         <Input
+          ref={refInput}
           type="text"
           placeholder="Enter list name..."
           value={name}
           onClick={event => event.stopPropagation()}
           onChange={event => setName(event.target.value)}
+          onKeyDown={event => {
+            switch (event.keyCode) {
+              case 13: // Enter is pressed
+                onClickApplyAdd(name);
+                break;
+
+              case 27: // Escape is pressed
+                onClickCancelAdd();
+                break;
+
+              default:
+                break;
+            }
+          }}
         />
       </Header>
       <Footer>
-        <ApplyButton label="Apply" onClick={() => onClickApplyAdd(name)} />
-        <Button label="Cancel" color="#e74c3c" onClick={onClickCancelAdd} />
+        <ApplyButton
+          label="Apply"
+          onClick={event => {
+            event.stopPropagation();
+            onClickApplyAdd(name);
+          }}
+        />
+        <Button
+          label="Cancel"
+          color="#e74c3c"
+          onClick={event => {
+            event.stopPropagation();
+            onClickCancelAdd();
+          }}
+        />
       </Footer>
     </List>
   ) : (

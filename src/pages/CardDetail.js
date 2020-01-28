@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
 import chroma from "chroma-js";
@@ -264,6 +264,7 @@ const CardDetail = () => {
   const { cardSlug } = useParams();
   const history = useHistory();
   const [current, send] = useMachine(machine);
+  const refInputName = useRef(null);
 
   const card = cards.find(card => card.slug === cardSlug);
   const list = lists.find(list => list.id === card.listId);
@@ -271,6 +272,7 @@ const CardDetail = () => {
   const totalChecked = currentChecks.filter(check => !!check.isChecked).length;
   const divide = totalChecked / currentChecks.length;
   const progress = Number.isNaN(divide) ? 0 : (divide * 100).toFixed(0);
+  const isUpdateCardName = current.matches("updateCardName");
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -280,6 +282,12 @@ const CardDetail = () => {
     setNewName(card ? card.name : "");
     setNewDescription(card ? card.description : "");
   }, [card]);
+
+  useEffect(() => {
+    if (isUpdateCardName) {
+      refInputName.current.select();
+    }
+  }, [isUpdateCardName]);
 
   if (!card || !list) return null;
 
@@ -299,6 +307,7 @@ const CardDetail = () => {
           <NameWrapper>
             {current.matches("updateCardName") ? (
               <Input
+                ref={refInputName}
                 type="text"
                 value={newName}
                 onClick={event => event.stopPropagation()}

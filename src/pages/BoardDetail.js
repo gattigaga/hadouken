@@ -249,7 +249,6 @@ const BoardDetail = () => {
                   });
 
                   dispatch(action);
-                  send("IDLE");
                 }}
                 onClickCancelAdd={() => send("IDLE")}
                 isWillAdd={

@@ -208,6 +208,21 @@ const List = ({
             placeholder="Enter a name for this card..."
             onClick={event => event.stopPropagation()}
             onChange={event => setNewCard(event.target.value)}
+            onKeyDown={event => {
+              switch (event.keyCode) {
+                case 13: // Enter is pressed
+                  onClickApplyAdd(newCard);
+                  setTimeout(() => setNewCard(""), 50);
+                  break;
+
+                case 27: // Escape is pressed
+                  onClickCancelAdd();
+                  break;
+
+                default:
+                  break;
+              }
+            }}
             value={newCard}
           />
         )}
@@ -220,6 +235,7 @@ const List = ({
               onClick={event => {
                 event.stopPropagation();
                 onClickApplyAdd(newCard);
+                setTimeout(() => setNewCard(""), 50);
               }}
             />
             <Button

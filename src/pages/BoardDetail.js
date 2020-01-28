@@ -2,20 +2,21 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { Machine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import chroma from "chroma-js";
 
 import List from "../components/List";
 import Card from "../components/Card";
+import Button from "../components/Button";
 import CreateList from "../components/CreateList";
 import {
   createList,
   deleteList,
   createCard,
   updateList,
-  updateBoard
+  updateBoard,
+  deleteBoard
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -36,7 +37,8 @@ const Title = styled.h1`
   font-size: 32px;
   letter-spacing: -1px;
   margin-top: 0px;
-  margin-bottom: 24px;
+  margin-bottom: 0px;
+  margin-right: 24px;
   color: white;
 `;
 
@@ -51,15 +53,17 @@ const Input = styled.input`
   margin-bottom: 24px;
   box-sizing: border-box;
   border-radius: 4px;
-  border: 2px solid
-    ${chroma("#3498db")
-      .darken(0.6)
-      .hex()};
+  border: 0px;
 `;
 
 const ListWrapper = styled.div`
   display: flex;
   align-items: flex-start;
+`;
+
+const Header = styled.header`
+  display: flex;
+  margin-bottom: 24px;
 `;
 
 const machine = Machine({
@@ -167,6 +171,7 @@ const BoardDetail = () => {
   const cards = useSelector(state => state.cards);
   const checks = useSelector(state => state.checks);
   const dispatch = useDispatch();
+  const history = useHistory();
   const { boardSlug } = useParams();
   const [current, send] = useMachine(machine);
 
@@ -195,14 +200,25 @@ const BoardDetail = () => {
             onBlur={() => dispatch(updateBoard(board.id, newBoardName))}
           />
         ) : (
-          <Title
-            onClick={event => {
-              event.stopPropagation();
-              send("UPDATE_BOARD_NAME");
-            }}
-          >
-            {board.name}
-          </Title>
+          <Header>
+            <Title
+              onClick={event => {
+                event.stopPropagation();
+                send("UPDATE_BOARD_NAME");
+              }}
+            >
+              {board.name}
+            </Title>
+            <Button
+              label="Delete"
+              color="#34495e"
+              onClick={event => {
+                event.stopPropagation();
+                history.goBack();
+                setTimeout(() => dispatch(deleteBoard(board.id)), 50);
+              }}
+            />
+          </Header>
         )}
         <ListWrapper>
           {lists

@@ -74,6 +74,14 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
           name="board"
           value={boardName}
           onChange={event => setBoardName(event.target.value)}
+          onKeyDown={event => {
+            const isEnterPressed = event.keyCode === 13;
+
+            if (isEnterPressed && boardName) {
+              onClickCreate(boardName);
+              setBoardName("");
+            }
+          }}
           autoComplete="off"
         />
         <Icon

@@ -265,6 +265,7 @@ const CardDetail = () => {
   const history = useHistory();
   const [current, send] = useMachine(machine);
   const refInputName = useRef(null);
+  const refInputDescription = useRef(null);
 
   const card = cards.find(card => card.slug === cardSlug);
   const list = lists.find(list => list.id === card.listId);
@@ -273,6 +274,7 @@ const CardDetail = () => {
   const divide = totalChecked / currentChecks.length;
   const progress = Number.isNaN(divide) ? 0 : (divide * 100).toFixed(0);
   const isUpdateCardName = current.matches("updateCardName");
+  const isUpdateCardDescription = current.matches("updateCardDescription");
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -288,6 +290,12 @@ const CardDetail = () => {
       refInputName.current.select();
     }
   }, [isUpdateCardName]);
+
+  useEffect(() => {
+    if (isUpdateCardDescription) {
+      refInputDescription.current.select();
+    }
+  }, [isUpdateCardDescription]);
 
   if (!card || !list) return null;
 
@@ -373,10 +381,19 @@ const CardDetail = () => {
             {current.matches("updateCardDescription") ? (
               <>
                 <Textarea
+                  ref={refInputDescription}
                   placeholder="Enter a description..."
                   value={newDescription}
                   onClick={event => event.stopPropagation()}
                   onChange={event => setNewDescription(event.target.value)}
+                  onKeyDown={event => {
+                    const isEscapePressed = event.keyCode === 27;
+
+                    if (isEscapePressed) {
+                      setNewDescription(card.description);
+                      send("IDLE");
+                    }
+                  }}
                 />
                 <Row>
                   <ApplyButton

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
@@ -174,7 +174,9 @@ const BoardDetail = () => {
   const history = useHistory();
   const { boardSlug } = useParams();
   const [current, send] = useMachine(machine);
+  const refInputName = useRef(null);
 
+  const isUpdateBoardName = current.matches("updateBoardName");
   const board = boards.find(board => board.slug === boardSlug);
 
   const [newBoardName, setNewBoardName] = useState("");
@@ -182,6 +184,12 @@ const BoardDetail = () => {
   useEffect(() => {
     setNewBoardName(board ? board.name : "");
   }, [board]);
+
+  useEffect(() => {
+    if (isUpdateBoardName) {
+      refInputName.current.select();
+    }
+  }, [isUpdateBoardName]);
 
   if (!board) return null;
 
@@ -193,6 +201,7 @@ const BoardDetail = () => {
       <Wrapper>
         {current.matches("updateBoardName") ? (
           <Input
+            ref={refInputName}
             type="text"
             value={newBoardName}
             onClick={event => event.stopPropagation()}

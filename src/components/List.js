@@ -130,9 +130,14 @@ const List = ({
   const [newCard, setNewCard] = useState("");
   const [newName, setNewName] = useState(name);
   const refInputName = useRef(null);
+  const refInputNewCard = useRef(null);
 
   useEffect(() => {
     setNewCard("");
+
+    if (isWillAdd) {
+      refInputNewCard.current.focus();
+    }
   }, [isWillAdd]);
 
   useEffect(() => {
@@ -199,12 +204,12 @@ const List = ({
         {children}
         {isWillAdd && (
           <NewCard
+            ref={refInputNewCard}
             placeholder="Enter a name for this card..."
             onClick={event => event.stopPropagation()}
             onChange={event => setNewCard(event.target.value)}
-          >
-            {newCard}
-          </NewCard>
+            value={newCard}
+          />
         )}
       </Content>
       <Footer>

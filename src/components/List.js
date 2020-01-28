@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
@@ -128,10 +128,17 @@ const List = ({
 }) => {
   const [newCard, setNewCard] = useState("");
   const [newName, setNewName] = useState(name);
+  const refInputName = useRef(null);
 
   useEffect(() => {
     setNewCard("");
   }, [isWillAdd]);
+
+  useEffect(() => {
+    if (isWillUpdateName) {
+      refInputName.current.select();
+    }
+  }, [isWillUpdateName]);
 
   useEffect(() => {
     const isApplied = !isWillUpdateName && name !== newName;
@@ -150,6 +157,7 @@ const List = ({
       <Header>
         {isWillUpdateName ? (
           <Input
+            ref={refInputName}
             type="text"
             value={newName}
             onClick={event => event.stopPropagation()}

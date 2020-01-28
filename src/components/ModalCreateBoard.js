@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import Modal from "react-modal";
@@ -57,6 +57,7 @@ const modalStyles = {
 
 const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
   const [boardName, setBoardName] = useState("");
+  const refInput = useRef(null);
 
   return (
     <Modal
@@ -66,10 +67,12 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
         onClickClose();
         setBoardName("");
       }}
+      onAfterOpen={() => refInput.current.focus()}
       contentLabel="Modal Create Board"
     >
       <Board>
         <Input
+          ref={refInput}
           type="text"
           name="board"
           value={boardName}
@@ -103,6 +106,8 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
     </Modal>
   );
 };
+
+Modal.setAppElement("#root");
 
 ModalCreateBoard.propTypes = {
   isOpen: PropTypes.bool,

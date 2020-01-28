@@ -266,6 +266,7 @@ const CardDetail = () => {
   const [current, send] = useMachine(machine);
   const refInputName = useRef(null);
   const refInputDescription = useRef(null);
+  const refInputCheck = useRef(null);
 
   const card = cards.find(card => card.slug === cardSlug);
   const list = lists.find(list => list.id === card.listId);
@@ -275,6 +276,7 @@ const CardDetail = () => {
   const progress = Number.isNaN(divide) ? 0 : (divide * 100).toFixed(0);
   const isUpdateCardName = current.matches("updateCardName");
   const isUpdateCardDescription = current.matches("updateCardDescription");
+  const isCreateCheck = current.matches("createCheck");
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -296,6 +298,12 @@ const CardDetail = () => {
       refInputDescription.current.select();
     }
   }, [isUpdateCardDescription]);
+
+  useEffect(() => {
+    if (isCreateCheck) {
+      refInputCheck.current.focus();
+    }
+  }, [isCreateCheck]);
 
   if (!card || !list) return null;
 
@@ -465,11 +473,30 @@ const CardDetail = () => {
           {current.matches("createCheck") ? (
             <EditWrapper>
               <Textarea
+                ref={refInputCheck}
                 height={48}
                 placeholder="Add an item"
                 value={newCheck}
                 onClick={event => event.stopPropagation()}
                 onChange={event => setNewCheck(event.target.value)}
+                onKeyDown={event => {
+                  switch (event.keyCode) {
+                    case 13: // Enter is pressed
+                      dispatch(
+                        createCheck({ cardId: card.id, label: newCheck })
+                      );
+                      setTimeout(() => setNewCheck(""), 20);
+                      break;
+
+                    case 27: // Escape is pressed
+                      setNewCheck("");
+                      send("IDLE");
+                      break;
+
+                    default:
+                      break;
+                  }
+                }}
               />
               <Row>
                 <ApplyButton
@@ -477,8 +504,7 @@ const CardDetail = () => {
                   onClick={event => {
                     event.stopPropagation();
                     dispatch(createCheck({ cardId: card.id, label: newCheck }));
-                    setNewCheck("");
-                    send("IDLE");
+                    setTimeout(() => setNewCheck(""), 20);
                   }}
                 />
                 <Button

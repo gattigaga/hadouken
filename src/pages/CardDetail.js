@@ -270,7 +270,7 @@ const CardDetail = () => {
   const currentChecks = checks.filter(check => check.cardId === card.id);
   const totalChecked = currentChecks.filter(check => !!check.isChecked).length;
   const divide = totalChecked / currentChecks.length;
-  const progress = Number.isNaN(divide) ? 0 : divide * 100;
+  const progress = Number.isNaN(divide) ? 0 : (divide * 100).toFixed(0);
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");

@@ -198,6 +198,18 @@ const BoardDetail = () => {
             onClick={event => event.stopPropagation()}
             onChange={event => setNewBoardName(event.target.value)}
             onBlur={() => dispatch(updateBoard(board.id, newBoardName))}
+            onKeyDown={event => {
+              switch (event.keyCode) {
+                case 13: // Enter is pressed
+                case 27: // Escape is pressed
+                  dispatch(updateBoard(board.id, newBoardName));
+                  send("IDLE");
+                  break;
+
+                default:
+                  break;
+              }
+            }}
           />
         ) : (
           <Header>

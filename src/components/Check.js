@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -85,10 +85,17 @@ const Check = ({
 }) => {
   const [newLabel, setNewLabel] = useState(label);
   const [isHovered, setIsHovered] = useState(false);
+  const refInput = useRef(null);
 
   useEffect(() => {
     setNewLabel(label);
   }, [isWillUpdateLabel, label]);
+
+  useEffect(() => {
+    if (isWillUpdateLabel) {
+      refInput.current.select();
+    }
+  }, [isWillUpdateLabel]);
 
   return (
     <Container
@@ -107,10 +114,26 @@ const Check = ({
         {isWillUpdateLabel ? (
           <>
             <Textarea
+              ref={refInput}
               placeholder="Enter a label..."
               value={newLabel}
               onClick={event => event.stopPropagation()}
               onChange={event => setNewLabel(event.target.value)}
+              onKeyDown={event => {
+                switch (event.keyCode) {
+                  case 13: // Enter is pressed
+                    onClickApplyUpdate(newLabel);
+                    break;
+
+                  case 27: // Escape is pressed
+                    setNewLabel(label);
+                    onClickCancelUpdate();
+                    break;
+
+                  default:
+                    break;
+                }
+              }}
             />
             <Row>
               <ApplyButton

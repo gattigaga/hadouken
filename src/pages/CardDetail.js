@@ -296,7 +296,10 @@ const CardDetail = () => {
       style={modalStyles}
       onRequestClose={() => {
         send("IDLE");
-        history.goBack();
+
+        if (current.matches("idle")) {
+          history.goBack();
+        }
       }}
       contentLabel="Card Detail"
       isOpen
@@ -313,6 +316,22 @@ const CardDetail = () => {
                 onClick={event => event.stopPropagation()}
                 onChange={event => setNewName(event.target.value)}
                 onBlur={() => dispatch(updateCard(card.id, { name: newName }))}
+                onKeyDown={event => {
+                  switch (event.keyCode) {
+                    case 13: // Enter is pressed
+                      dispatch(updateCard(card.id, { name: newName }));
+                      send("IDLE");
+                      break;
+
+                    case 27: // Escape is pressed
+                      setNewName(card.name);
+                      send("IDLE");
+                      break;
+
+                    default:
+                      break;
+                  }
+                }}
               />
             ) : (
               <Name

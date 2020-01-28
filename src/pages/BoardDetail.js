@@ -231,6 +231,7 @@ const BoardDetail = () => {
                   if (!newListName) return;
 
                   dispatch(updateList(list.id, { name: newListName }));
+                  send("IDLE");
                 }}
                 onClickName={() =>
                   send("UPDATE_LIST_NAME", { listId: list.id })

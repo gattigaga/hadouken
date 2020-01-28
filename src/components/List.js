@@ -33,6 +33,7 @@ const Name = styled.h2`
   font-family: "Roboto";
   color: #777;
   margin-right: auto;
+  width: 100%;
 `;
 
 const Content = styled.div`
@@ -150,7 +151,7 @@ const List = ({
     if (newName) return;
 
     setNewName(name);
-  }, [isWillUpdateName, newName]);
+  }, [isWillUpdateName, name, onNameUpdated, newName]);
 
   return (
     <Container>
@@ -162,6 +163,17 @@ const List = ({
             value={newName}
             onClick={event => event.stopPropagation()}
             onChange={event => setNewName(event.target.value)}
+            onKeyDown={event => {
+              switch (event.keyCode) {
+                case 13: // Enter is pressed
+                case 27: // Escape is pressed
+                  onNameUpdated(newName);
+                  break;
+
+                default:
+                  break;
+              }
+            }}
           />
         ) : (
           <Name

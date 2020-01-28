@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import { Machine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
+import chroma from "chroma-js";
 
 import List from "../components/List";
 import Card from "../components/Card";
@@ -13,7 +14,8 @@ import {
   createList,
   deleteList,
   createCard,
-  updateList
+  updateList,
+  updateBoard
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -34,7 +36,25 @@ const Title = styled.h1`
   font-size: 32px;
   letter-spacing: -1px;
   margin-top: 0px;
+  margin-bottom: 24px;
   color: white;
+`;
+
+const Input = styled.input`
+  width: 320px;
+  height: 42px;
+  font-family: "Roboto";
+  font-size: 24px;
+  outline: none;
+  padding: 0px 8px;
+  margin-right: 24px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 2px solid
+    ${chroma("#3498db")
+      .darken(0.6)
+      .hex()};
 `;
 
 const ListWrapper = styled.div`
@@ -49,6 +69,7 @@ const machine = Machine({
     idle: {
       on: {
         CREATE_LIST: "createList",
+        UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
@@ -66,6 +87,7 @@ const machine = Machine({
     createList: {
       on: {
         IDLE: "idle",
+        UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
@@ -84,6 +106,7 @@ const machine = Machine({
       on: {
         IDLE: "idle",
         CREATE_LIST: "createList",
+        UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
@@ -99,6 +122,25 @@ const machine = Machine({
       }
     },
     updateListName: {
+      on: {
+        IDLE: "idle",
+        CREATE_LIST: "createList",
+        UPDATE_BOARD_NAME: "updateBoardName",
+        CREATE_CARD: {
+          target: "createCard",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        },
+        UPDATE_LIST_NAME: {
+          target: "updateListName",
+          actions: assign({
+            listId: (_, event) => event.listId
+          })
+        }
+      }
+    },
+    updateBoardName: {
       on: {
         IDLE: "idle",
         CREATE_LIST: "createList",
@@ -130,6 +172,12 @@ const BoardDetail = () => {
 
   const board = boards.find(board => board.slug === boardSlug);
 
+  const [newBoardName, setNewBoardName] = useState("");
+
+  useEffect(() => {
+    setNewBoardName(board ? board.name : "");
+  }, [board]);
+
   if (!board) return null;
 
   return (
@@ -138,7 +186,24 @@ const BoardDetail = () => {
         <title>Hadouken | {board.name}</title>
       </Helmet>
       <Wrapper>
-        <Title>{board.name}</Title>
+        {current.matches("updateBoardName") ? (
+          <Input
+            type="text"
+            value={newBoardName}
+            onClick={event => event.stopPropagation()}
+            onChange={event => setNewBoardName(event.target.value)}
+            onBlur={() => dispatch(updateBoard(board.id, newBoardName))}
+          />
+        ) : (
+          <Title
+            onClick={event => {
+              event.stopPropagation();
+              send("UPDATE_BOARD_NAME");
+            }}
+          >
+            {board.name}
+          </Title>
+        )}
         <ListWrapper>
           {lists
             .filter(list => list.boardId === board.id)

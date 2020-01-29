@@ -5,6 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import { Machine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import chroma from "chroma-js";
 
 import List from "../components/List";
 import Card from "../components/Card";
@@ -64,6 +67,16 @@ const ListWrapper = styled.div`
 const Header = styled.header`
   display: flex;
   margin-bottom: 24px;
+  align-items: center;
+`;
+
+const Icon = styled(FontAwesomeIcon)`
+  font-size: 32px;
+  margin-right: 32px;
+  cursor: pointer;
+  color: ${chroma("#3498db")
+    .brighten(0.5)
+    .hex()};
 `;
 
 const machine = Machine({
@@ -222,6 +235,13 @@ const BoardDetail = () => {
           />
         ) : (
           <Header>
+            <Icon
+              icon={faHome}
+              onClick={event => {
+                event.stopPropagation();
+                history.goBack();
+              }}
+            />
             <Title
               onClick={event => {
                 event.stopPropagation();

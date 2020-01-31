@@ -291,7 +291,29 @@ const BoardDetail = () => {
               onClick={event => {
                 event.stopPropagation();
                 history.goBack();
-                setTimeout(() => dispatch(deleteBoard(board.id)), 50);
+                setTimeout(() => {
+                  currentLists.forEach(list => {
+                    const currentCards = cards
+                      .filter(card => card.listId === list.id)
+                      .sort((a, b) => a.index - b.index);
+
+                    currentCards.forEach(card => {
+                      const currentChecks = checks.filter(
+                        check => check.cardId === card.id
+                      );
+
+                      currentChecks.forEach(check => {
+                        dispatch(deleteCheck(check.id));
+                      });
+
+                      dispatch(deleteCard(card.id));
+                    });
+
+                    dispatch(deleteList(list.id));
+                  });
+
+                  dispatch(deleteBoard(board.id));
+                }, 50);
               }}
             />
           </Header>

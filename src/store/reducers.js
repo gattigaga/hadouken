@@ -61,7 +61,21 @@ export const lists = (state = [], action) => {
       });
 
     case DELETE_LIST:
-      return state.filter(item => item.id !== payload);
+      return (() => {
+        const afterDeletedLists = state.filter(item => item.id !== payload);
+        const list = state.find(item => item.id === payload);
+
+        const sortedLists = afterDeletedLists
+          .filter(item => item.boardId === list.boardId)
+          .map((item, index) => ({ ...item, index }))
+          .sort((a, b) => a.index - b.index);
+
+        const result = afterDeletedLists
+          .filter(item => item.boardId !== list.boardId)
+          .concat(sortedLists);
+
+        return result;
+      })();
 
     default:
       return state;

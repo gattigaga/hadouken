@@ -14,7 +14,8 @@ import {
   UPDATE_CHECK,
   DELETE_CHECK,
   MOVE_CARD,
-  MOVE_LIST
+  MOVE_LIST,
+  MOVE_CHECK
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -215,6 +216,27 @@ export const checks = (state = [], action) => {
 
         return item;
       });
+
+    case MOVE_CHECK:
+      return (() => {
+        const { index: newIndex } = payload.data;
+
+        const check = state.find(item => item.id === payload.id);
+        const checks = state.filter(item => item.cardId === check.cardId);
+        const oldIndex = check.index;
+        const movedChecks = arrayMove(checks, oldIndex, newIndex);
+
+        const sortedChecks = movedChecks.map((check, index) => ({
+          ...check,
+          index
+        }));
+
+        const result = state
+          .filter(item => item.cardId !== check.cardId)
+          .concat(sortedChecks);
+
+        return result;
+      })();
 
     case DELETE_CHECK:
       return (() => {

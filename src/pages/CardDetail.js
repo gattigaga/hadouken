@@ -384,7 +384,14 @@ const CardDetail = () => {
                 onClick={event => {
                   event.stopPropagation();
                   history.goBack();
-                  setTimeout(() => dispatch(deleteCard(card.id)), 50);
+
+                  setTimeout(() => {
+                    currentChecks.forEach(check => {
+                      dispatch(deleteCheck(check.id));
+                    });
+
+                    dispatch(deleteCard(card.id));
+                  }, 50);
                 }}
               >
                 (Delete)

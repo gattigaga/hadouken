@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
-import { Droppable } from "react-beautiful-dnd";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -162,113 +162,121 @@ const List = ({
   }, [isWillUpdateName, name, onNameUpdated, newName]);
 
   return (
-    <Container>
-      <Header>
-        {isWillUpdateName ? (
-          <Input
-            ref={refInputName}
-            type="text"
-            value={newName}
-            onClick={event => event.stopPropagation()}
-            onChange={event => setNewName(event.target.value)}
-            onKeyDown={event => {
-              switch (event.keyCode) {
-                case 13: // Enter is pressed
-                case 27: // Escape is pressed
-                  onNameUpdated(newName);
-                  break;
-
-                default:
-                  break;
-              }
-            }}
-          />
-        ) : (
-          <Name
-            onClick={event => {
-              event.stopPropagation();
-              onClickName();
-            }}
-          >
-            {name}
-          </Name>
-        )}
-        <CloseButton
-          type="button"
-          onClick={event => {
-            event.stopPropagation();
-            onClickClose();
-          }}
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <Container
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
         >
-          <Icon icon={faTimes} />
-        </CloseButton>
-      </Header>
-      <Droppable droppableId={id}>
-        {provided => (
-          <Content ref={provided.innerRef} {...provided.droppableProps}>
-            {children}
-            {provided.placeholder}
-            {isWillAdd && (
-              <NewCard
-                ref={refInputNewCard}
-                placeholder="Enter a name for this card..."
+          <Header>
+            {isWillUpdateName ? (
+              <Input
+                ref={refInputName}
+                type="text"
+                value={newName}
                 onClick={event => event.stopPropagation()}
-                onChange={event => setNewCard(event.target.value)}
+                onChange={event => setNewName(event.target.value)}
                 onKeyDown={event => {
                   switch (event.keyCode) {
                     case 13: // Enter is pressed
-                      onClickApplyAdd(newCard);
-                      setTimeout(() => setNewCard(""), 50);
-                      break;
-
                     case 27: // Escape is pressed
-                      onClickCancelAdd();
+                      onNameUpdated(newName);
                       break;
 
                     default:
                       break;
                   }
                 }}
-                value={newCard}
               />
+            ) : (
+              <Name
+                onClick={event => {
+                  event.stopPropagation();
+                  onClickName();
+                }}
+              >
+                {name}
+              </Name>
             )}
-          </Content>
-        )}
-      </Droppable>
-      <Footer>
-        {isWillAdd ? (
-          <>
-            <ApplyButton
-              label="Apply"
+            <CloseButton
+              type="button"
               onClick={event => {
                 event.stopPropagation();
-                onClickApplyAdd(newCard);
-                setTimeout(() => setNewCard(""), 50);
+                onClickClose();
               }}
-            />
-            <Button
-              label="Cancel"
-              color="#e74c3c"
-              onClick={event => {
-                event.stopPropagation();
-                onClickCancelAdd();
-              }}
-            />
-          </>
-        ) : (
-          <FooterButton
-            type="button"
-            onClick={event => {
-              event.stopPropagation();
-              onClickAdd();
-            }}
-          >
-            <Icon icon={faPlus} />
-            <Text>Add new card</Text>
-          </FooterButton>
-        )}
-      </Footer>
-    </Container>
+            >
+              <Icon icon={faTimes} />
+            </CloseButton>
+          </Header>
+          <Droppable droppableId={id} type="CARD">
+            {provided => (
+              <Content ref={provided.innerRef} {...provided.droppableProps}>
+                {children}
+                {provided.placeholder}
+                {isWillAdd && (
+                  <NewCard
+                    ref={refInputNewCard}
+                    placeholder="Enter a name for this card..."
+                    onClick={event => event.stopPropagation()}
+                    onChange={event => setNewCard(event.target.value)}
+                    onKeyDown={event => {
+                      switch (event.keyCode) {
+                        case 13: // Enter is pressed
+                          onClickApplyAdd(newCard);
+                          setTimeout(() => setNewCard(""), 50);
+                          break;
+
+                        case 27: // Escape is pressed
+                          onClickCancelAdd();
+                          break;
+
+                        default:
+                          break;
+                      }
+                    }}
+                    value={newCard}
+                  />
+                )}
+              </Content>
+            )}
+          </Droppable>
+          <Footer>
+            {isWillAdd ? (
+              <>
+                <ApplyButton
+                  label="Apply"
+                  onClick={event => {
+                    event.stopPropagation();
+                    onClickApplyAdd(newCard);
+                    setTimeout(() => setNewCard(""), 50);
+                  }}
+                />
+                <Button
+                  label="Cancel"
+                  color="#e74c3c"
+                  onClick={event => {
+                    event.stopPropagation();
+                    onClickCancelAdd();
+                  }}
+                />
+              </>
+            ) : (
+              <FooterButton
+                type="button"
+                onClick={event => {
+                  event.stopPropagation();
+                  onClickAdd();
+                }}
+              >
+                <Icon icon={faPlus} />
+                <Text>Add new card</Text>
+              </FooterButton>
+            )}
+          </Footer>
+        </Container>
+      )}
+    </Draggable>
   );
 };
 

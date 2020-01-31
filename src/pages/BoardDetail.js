@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import { Machine, assign } from "xstate";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useMachine } from "@xstate/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
@@ -21,7 +21,8 @@ import {
   updateList,
   updateBoard,
   deleteBoard,
-  moveCard
+  moveCard,
+  moveList
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -207,7 +208,7 @@ const BoardDetail = () => {
   }, [isUpdateBoardName]);
 
   const reorder = result => {
-    const { source, destination, draggableId } = result;
+    const { type, source, destination, draggableId } = result;
 
     if (!destination) return;
 
@@ -216,12 +217,20 @@ const BoardDetail = () => {
 
     if (isSameList && isSameIndex) return;
 
-    dispatch(
-      moveCard(draggableId, {
-        listId: isSameList ? undefined : destination.droppableId,
-        index: destination.index
-      })
-    );
+    if (type === "LIST") {
+      dispatch(
+        moveList(draggableId, {
+          index: destination.index
+        })
+      );
+    } else {
+      dispatch(
+        moveCard(draggableId, {
+          listId: isSameList ? undefined : destination.droppableId,
+          index: destination.index
+        })
+      );
+    }
   };
 
   if (!board) return null;
@@ -282,94 +291,105 @@ const BoardDetail = () => {
           </Header>
         )}
         <DragDropContext onDragEnd={reorder}>
-          <ListWrapper>
-            {lists
-              .filter(list => list.boardId === board.id)
-              .sort((a, b) => a.index - b.index)
-              .map(list => (
-                <List
-                  key={list.id}
-                  id={list.id}
-                  index={list.index}
-                  name={list.name}
-                  onNameUpdated={newListName => {
-                    if (!newListName) return;
+          <Droppable
+            droppableId="droppable-root"
+            direction="horizontal"
+            type="LIST"
+          >
+            {provided => (
+              <ListWrapper ref={provided.innerRef} {...provided.droppableProps}>
+                {lists
+                  .filter(list => list.boardId === board.id)
+                  .sort((a, b) => a.index - b.index)
+                  .map(list => (
+                    <List
+                      key={list.id}
+                      id={list.id}
+                      index={list.index}
+                      name={list.name}
+                      onNameUpdated={newListName => {
+                        if (!newListName) return;
 
-                    dispatch(updateList(list.id, { name: newListName }));
-                    send("IDLE");
-                  }}
-                  onClickName={() =>
-                    send("UPDATE_LIST_NAME", { listId: list.id })
-                  }
-                  onClickClose={() => {
-                    dispatch(deleteList(list.id));
-                  }}
-                  onClickAdd={() => send("CREATE_CARD", { listId: list.id })}
-                  onClickApplyAdd={cardName => {
-                    if (!cardName) return;
+                        dispatch(updateList(list.id, { name: newListName }));
+                        send("IDLE");
+                      }}
+                      onClickName={() =>
+                        send("UPDATE_LIST_NAME", { listId: list.id })
+                      }
+                      onClickClose={() => {
+                        dispatch(deleteList(list.id));
+                      }}
+                      onClickAdd={() =>
+                        send("CREATE_CARD", { listId: list.id })
+                      }
+                      onClickApplyAdd={cardName => {
+                        if (!cardName) return;
 
-                    const action = createCard({
-                      listId: list.id,
-                      name: cardName
+                        const action = createCard({
+                          listId: list.id,
+                          name: cardName
+                        });
+
+                        dispatch(action);
+                      }}
+                      onClickCancelAdd={() => send("IDLE")}
+                      isWillAdd={
+                        current.matches("createCard") &&
+                        current.context.listId === list.id
+                      }
+                      isWillUpdateName={
+                        current.matches("updateListName") &&
+                        current.context.listId === list.id
+                      }
+                    >
+                      {cards
+                        .filter(card => card.listId === list.id)
+                        .sort((a, b) => a.index - b.index)
+                        .map(card => {
+                          const currentChecks = checks.filter(
+                            check => check.cardId === card.id
+                          );
+
+                          const totalChecked = currentChecks.filter(
+                            check => !!check.isChecked
+                          ).length;
+
+                          return (
+                            <Card
+                              key={card.id}
+                              id={card.id}
+                              index={card.index}
+                              name={card.name}
+                              to={`${board.slug}/${card.slug}`}
+                              totalChecked={totalChecked}
+                              maxChecklist={currentChecks.length}
+                              hasDescription={card.description}
+                              hasChecklist={!!currentChecks.length}
+                            />
+                          );
+                        })}
+                    </List>
+                  ))}
+                {provided.placeholder}
+                <CreateList
+                  onClickAdd={() => send("CREATE_LIST")}
+                  onClickApplyAdd={listName => {
+                    if (!listName) return;
+
+                    const action = createList({
+                      boardId: board.id,
+                      name: listName
                     });
 
                     dispatch(action);
+                    send("IDLE");
                   }}
                   onClickCancelAdd={() => send("IDLE")}
-                  isWillAdd={
-                    current.matches("createCard") &&
-                    current.context.listId === list.id
-                  }
-                  isWillUpdateName={
-                    current.matches("updateListName") &&
-                    current.context.listId === list.id
-                  }
-                >
-                  {cards
-                    .filter(card => card.listId === list.id)
-                    .sort((a, b) => a.index - b.index)
-                    .map(card => {
-                      const currentChecks = checks.filter(
-                        check => check.cardId === card.id
-                      );
-
-                      const totalChecked = currentChecks.filter(
-                        check => !!check.isChecked
-                      ).length;
-
-                      return (
-                        <Card
-                          key={card.id}
-                          id={card.id}
-                          index={card.index}
-                          name={card.name}
-                          to={`${board.slug}/${card.slug}`}
-                          totalChecked={totalChecked}
-                          maxChecklist={currentChecks.length}
-                          hasDescription={card.description}
-                          hasChecklist={!!currentChecks.length}
-                        />
-                      );
-                    })}
-                </List>
-              ))}
-            <CreateList
-              onClickAdd={() => send("CREATE_LIST")}
-              onClickApplyAdd={listName => {
-                if (!listName) return;
-
-                const action = createList({
-                  boardId: board.id,
-                  name: listName
-                });
-
-                dispatch(action);
-                send("IDLE");
-              }}
-              onClickCancelAdd={() => send("IDLE")}
-              isWillAdd={current.matches("createList")}
-            />
-          </ListWrapper>
+                  isWillAdd={current.matches("createList")}
+                />
+              </ListWrapper>
+            )}
+          </Droppable>
         </DragDropContext>
       </Wrapper>
     </Container>

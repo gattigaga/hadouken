@@ -13,7 +13,8 @@ import {
   CREATE_CHECK,
   UPDATE_CHECK,
   DELETE_CHECK,
-  MOVE_CARD
+  MOVE_CARD,
+  MOVE_LIST
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -59,6 +60,27 @@ export const lists = (state = [], action) => {
 
         return item;
       });
+
+    case MOVE_LIST:
+      return (() => {
+        const { index: newIndex } = payload.data;
+
+        const list = state.find(item => item.id === payload.id);
+        const lists = state.filter(item => item.boardId === list.boardId);
+        const oldIndex = list.index;
+        const movedCards = arrayMove(lists, oldIndex, newIndex);
+
+        const sortedCards = movedCards.map((list, index) => ({
+          ...list,
+          index
+        }));
+
+        const result = state
+          .filter(item => item.boardId !== list.boardId)
+          .concat(sortedCards);
+
+        return result;
+      })();
 
     case DELETE_LIST:
       return (() => {

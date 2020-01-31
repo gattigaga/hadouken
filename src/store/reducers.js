@@ -217,7 +217,21 @@ export const checks = (state = [], action) => {
       });
 
     case DELETE_CHECK:
-      return state.filter(item => item.id !== payload);
+      return (() => {
+        const afterDeletedChecks = state.filter(item => item.id !== payload);
+        const check = state.find(item => item.id === payload);
+
+        const sortedChecks = afterDeletedChecks
+          .filter(item => item.cardId === check.cardId)
+          .map((item, index) => ({ ...item, index }))
+          .sort((a, b) => a.index - b.index);
+
+        const result = afterDeletedChecks
+          .filter(item => item.cardId !== check.cardId)
+          .concat(sortedChecks);
+
+        return result;
+      })();
 
     default:
       return state;

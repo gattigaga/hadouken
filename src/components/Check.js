@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
@@ -74,6 +75,8 @@ const Textarea = styled.textarea`
 `;
 
 const Check = ({
+  id,
+  index,
   label,
   isChecked,
   isWillUpdateLabel,
@@ -98,88 +101,97 @@ const Check = ({
   }, [isWillUpdateLabel]);
 
   return (
-    <Container
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Checkbox
-        type="checkbox"
-        onChange={event => {
-          event.stopPropagation();
-          onClickCheck();
-        }}
-        checked={isChecked}
-      />
-      <LabelWrapper>
-        {isWillUpdateLabel ? (
-          <>
-            <Textarea
-              ref={refInput}
-              placeholder="Enter a label..."
-              value={newLabel}
-              onClick={event => event.stopPropagation()}
-              onChange={event => setNewLabel(event.target.value)}
-              onKeyDown={event => {
-                switch (event.keyCode) {
-                  case 13: // Enter is pressed
-                    onClickApplyUpdate(newLabel);
-                    break;
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <Container
+          ref={provided.innerRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <Checkbox
+            type="checkbox"
+            onChange={event => {
+              event.stopPropagation();
+              onClickCheck();
+            }}
+            checked={isChecked}
+          />
+          <LabelWrapper>
+            {isWillUpdateLabel ? (
+              <>
+                <Textarea
+                  ref={refInput}
+                  placeholder="Enter a label..."
+                  value={newLabel}
+                  onClick={event => event.stopPropagation()}
+                  onChange={event => setNewLabel(event.target.value)}
+                  onKeyDown={event => {
+                    switch (event.keyCode) {
+                      case 13: // Enter is pressed
+                        onClickApplyUpdate(newLabel);
+                        break;
 
-                  case 27: // Escape is pressed
-                    setNewLabel(label);
-                    onClickCancelUpdate();
-                    break;
+                      case 27: // Escape is pressed
+                        setNewLabel(label);
+                        onClickCancelUpdate();
+                        break;
 
-                  default:
-                    break;
-                }
+                      default:
+                        break;
+                    }
+                  }}
+                />
+                <Row>
+                  <ApplyButton
+                    label="Apply"
+                    onClick={event => {
+                      event.stopPropagation();
+                      onClickApplyUpdate(newLabel);
+                    }}
+                  />
+                  <Button
+                    label="Cancel"
+                    color="#e74c3c"
+                    onClick={event => {
+                      event.stopPropagation();
+                      setNewLabel(label);
+                      onClickCancelUpdate();
+                    }}
+                  />
+                </Row>
+              </>
+            ) : (
+              <Label
+                onClick={event => {
+                  event.stopPropagation();
+                  onClickLabel();
+                }}
+                isChecked={isChecked}
+              >
+                {label}
+              </Label>
+            )}
+          </LabelWrapper>
+          {isHovered && (
+            <Icon
+              icon={faTimes}
+              onClick={event => {
+                event.stopPropagation();
+                onClickDelete();
               }}
             />
-            <Row>
-              <ApplyButton
-                label="Apply"
-                onClick={event => {
-                  event.stopPropagation();
-                  onClickApplyUpdate(newLabel);
-                }}
-              />
-              <Button
-                label="Cancel"
-                color="#e74c3c"
-                onClick={event => {
-                  event.stopPropagation();
-                  setNewLabel(label);
-                  onClickCancelUpdate();
-                }}
-              />
-            </Row>
-          </>
-        ) : (
-          <Label
-            onClick={event => {
-              event.stopPropagation();
-              onClickLabel();
-            }}
-            isChecked={isChecked}
-          >
-            {label}
-          </Label>
-        )}
-      </LabelWrapper>
-      {isHovered && (
-        <Icon
-          icon={faTimes}
-          onClick={event => {
-            event.stopPropagation();
-            onClickDelete();
-          }}
-        />
+          )}
+        </Container>
       )}
-    </Container>
+    </Draggable>
   );
 };
 
 Check.propTypes = {
+  id: PropTypes.string,
+  index: PropTypes.number,
   label: PropTypes.string,
   isChecked: PropTypes.bool,
   isWillUpdateLabel: PropTypes.bool,

@@ -5,6 +5,7 @@ import chroma from "chroma-js";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import {
   faTimes,
   faIdCard,
@@ -22,7 +23,8 @@ import {
   createCheck,
   updateCheck,
   deleteCheck,
-  deleteCard
+  deleteCard,
+  moveCheck
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -305,6 +307,23 @@ const CardDetail = () => {
     }
   }, [isCreateCheck]);
 
+  const reorder = result => {
+    const { source, destination, draggableId } = result;
+
+    if (!destination) return;
+
+    const isSameCard = destination.droppableId === source.droppableId;
+    const isSameIndex = destination.index === source.index;
+
+    if (isSameCard && isSameIndex) return;
+
+    dispatch(
+      moveCheck(draggableId, {
+        index: destination.index
+      })
+    );
+  };
+
   if (!card || !list) return null;
 
   return (
@@ -444,90 +463,108 @@ const CardDetail = () => {
             <Subtitle>Checklist</Subtitle>
           </SectionHeader>
           <Progress value={progress} />
-          {currentChecks.map(check => (
-            <Check
-              key={check.id}
-              label={check.label}
-              isChecked={check.isChecked}
-              onClickCheck={() => {
-                dispatch(
-                  updateCheck(check.id, { isChecked: !check.isChecked })
-                );
-              }}
-              onClickLabel={() => send("UPDATE_CHECK", { checkId: check.id })}
-              onClickApplyUpdate={newLabel => {
-                dispatch(updateCheck(check.id, { label: newLabel }));
-                send("IDLE");
-              }}
-              onClickCancelUpdate={() => {
-                setNewCheck("");
-                send("IDLE");
-              }}
-              onClickDelete={() => dispatch(deleteCheck(check.id))}
-              isWillUpdateLabel={
-                current.matches("updateCheck") &&
-                current.context.checkId === check.id
-              }
-            />
-          ))}
-          {current.matches("createCheck") ? (
-            <EditWrapper>
-              <Textarea
-                ref={refInputCheck}
-                height={48}
-                placeholder="Add an item"
-                value={newCheck}
-                onClick={event => event.stopPropagation()}
-                onChange={event => setNewCheck(event.target.value)}
-                onKeyDown={event => {
-                  switch (event.keyCode) {
-                    case 13: // Enter is pressed
-                      dispatch(
-                        createCheck({ cardId: card.id, label: newCheck })
-                      );
-                      setTimeout(() => setNewCheck(""), 20);
-                      break;
+          <DragDropContext onDragEnd={reorder}>
+            <Droppable droppableId={card.id} direction="vertical" type="CHECK">
+              {provided => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  {currentChecks.map(check => (
+                    <Check
+                      key={check.id}
+                      id={check.id}
+                      index={check.index}
+                      label={check.label}
+                      isChecked={check.isChecked}
+                      onClickCheck={() => {
+                        dispatch(
+                          updateCheck(check.id, { isChecked: !check.isChecked })
+                        );
+                      }}
+                      onClickLabel={() =>
+                        send("UPDATE_CHECK", { checkId: check.id })
+                      }
+                      onClickApplyUpdate={newLabel => {
+                        dispatch(updateCheck(check.id, { label: newLabel }));
+                        send("IDLE");
+                      }}
+                      onClickCancelUpdate={() => {
+                        setNewCheck("");
+                        send("IDLE");
+                      }}
+                      onClickDelete={() => dispatch(deleteCheck(check.id))}
+                      isWillUpdateLabel={
+                        current.matches("updateCheck") &&
+                        current.context.checkId === check.id
+                      }
+                    />
+                  ))}
+                  {provided.placeholder}
+                  {current.matches("createCheck") ? (
+                    <EditWrapper>
+                      <Textarea
+                        ref={refInputCheck}
+                        height={48}
+                        placeholder="Add an item"
+                        value={newCheck}
+                        onClick={event => event.stopPropagation()}
+                        onChange={event => setNewCheck(event.target.value)}
+                        onKeyDown={event => {
+                          switch (event.keyCode) {
+                            case 13: // Enter is pressed
+                              dispatch(
+                                createCheck({
+                                  cardId: card.id,
+                                  label: newCheck
+                                })
+                              );
+                              setTimeout(() => setNewCheck(""), 20);
+                              break;
 
-                    case 27: // Escape is pressed
-                      setNewCheck("");
-                      send("IDLE");
-                      break;
+                            case 27: // Escape is pressed
+                              setNewCheck("");
+                              send("IDLE");
+                              break;
 
-                    default:
-                      break;
-                  }
-                }}
-              />
-              <Row>
-                <ApplyButton
-                  label="Apply"
-                  onClick={event => {
-                    event.stopPropagation();
-                    dispatch(createCheck({ cardId: card.id, label: newCheck }));
-                    setTimeout(() => setNewCheck(""), 20);
-                  }}
-                />
-                <Button
-                  label="Cancel"
-                  color="#e74c3c"
-                  onClick={event => {
-                    event.stopPropagation();
-                    setNewCheck("");
-                    send("IDLE");
-                  }}
-                />
-              </Row>
-            </EditWrapper>
-          ) : (
-            <AddCheckButton
-              label="Add an item"
-              color="#34495e"
-              onClick={event => {
-                event.stopPropagation();
-                send("CREATE_CHECK");
-              }}
-            />
-          )}
+                            default:
+                              break;
+                          }
+                        }}
+                      />
+                      <Row>
+                        <ApplyButton
+                          label="Apply"
+                          onClick={event => {
+                            event.stopPropagation();
+                            dispatch(
+                              createCheck({ cardId: card.id, label: newCheck })
+                            );
+                            setTimeout(() => setNewCheck(""), 20);
+                          }}
+                        />
+                        <Button
+                          label="Cancel"
+                          color="#e74c3c"
+                          onClick={event => {
+                            event.stopPropagation();
+                            setNewCheck("");
+                            send("IDLE");
+                          }}
+                        />
+                      </Row>
+                    </EditWrapper>
+                  ) : (
+                    <AddCheckButton
+                      label="Add an item"
+                      color="#34495e"
+                      onClick={event => {
+                        event.stopPropagation();
+                        send("CREATE_CHECK");
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </Section>
       </Container>
     </Modal>

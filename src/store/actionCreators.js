@@ -12,7 +12,8 @@ import {
   DELETE_CARD,
   DELETE_CHECK,
   CREATE_CHECK,
-  UPDATE_CHECK
+  UPDATE_CHECK,
+  MOVE_CARD
 } from "./actions";
 
 export const createBoard = name => {
@@ -98,7 +99,7 @@ export const createCard = ({ listId, name }) => {
 
 export const updateCard = (id, data) => {
   const validData = {};
-  const dataKeys = ["listId", "name", "description", "index"];
+  const dataKeys = ["name", "description"];
 
   dataKeys.forEach(key => {
     if (data[key] === undefined) return;
@@ -108,6 +109,22 @@ export const updateCard = (id, data) => {
 
   return {
     type: UPDATE_CARD,
+    payload: { id, data: validData }
+  };
+};
+
+export const moveCard = (id, data) => {
+  const validData = {};
+  const dataKeys = ["listId", "index"];
+
+  dataKeys.forEach(key => {
+    if (data[key] === undefined) return;
+
+    validData[key] = data[key];
+  });
+
+  return {
+    type: MOVE_CARD,
     payload: { id, data: validData }
   };
 };

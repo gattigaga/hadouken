@@ -86,7 +86,21 @@ export const cards = (state = [], action) => {
       });
 
     case DELETE_CARD:
-      return state.filter(item => item.id !== payload);
+      return (() => {
+        const afterDeletedCards = state.filter(item => item.id !== payload);
+        const card = state.find(item => item.id === payload);
+
+        const sortedCards = afterDeletedCards
+          .filter(item => item.listId === card.listId)
+          .map((item, index) => ({ ...item, index }))
+          .sort((a, b) => a.index - b.index);
+
+        const result = afterDeletedCards
+          .filter(item => item.listId !== card.listId)
+          .concat(sortedCards);
+
+        return result;
+      })();
 
     default:
       return state;

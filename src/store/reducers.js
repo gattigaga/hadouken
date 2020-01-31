@@ -1,3 +1,5 @@
+import arrayMove from "array-move";
+
 import {
   CREATE_BOARD,
   UPDATE_BOARD,
@@ -10,7 +12,8 @@ import {
   DELETE_CARD,
   CREATE_CHECK,
   UPDATE_CHECK,
-  DELETE_CHECK
+  DELETE_CHECK,
+  MOVE_CARD
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -84,6 +87,56 @@ export const cards = (state = [], action) => {
 
         return item;
       });
+
+    case MOVE_CARD:
+      return (() => {
+        const withIndex = (card, index) => ({
+          ...card,
+          index
+        });
+
+        const { listId: newListId, index: newIndex } = payload.data;
+        const isMoveToOtherList = newListId !== undefined;
+
+        if (isMoveToOtherList) {
+          const byListId = listId => item => item.listId === listId;
+
+          const card = state.find(item => item.id === payload.id);
+          const oldListId = card.listId;
+          const sourceCards = state.filter(byListId(oldListId));
+          const destinationCards = state.filter(byListId(newListId));
+
+          const newSourceCards = sourceCards
+            .filter(item => item.id !== card.id)
+            .map(withIndex);
+
+          const newDestinationCards = [
+            ...destinationCards.slice(0, newIndex),
+            { ...card, listId: newListId },
+            ...destinationCards.slice(newIndex)
+          ].map(withIndex);
+
+          const result = state
+            .filter(
+              item => item.listId !== oldListId && item.listId !== newListId
+            )
+            .concat([...newSourceCards, ...newDestinationCards]);
+
+          return result;
+        } else {
+          const card = state.find(item => item.id === payload.id);
+          const cards = state.filter(item => item.listId === card.listId);
+          const oldIndex = card.index;
+          const movedCards = arrayMove(cards, oldIndex, newIndex);
+          const sortedCards = movedCards.map(withIndex);
+
+          const result = state
+            .filter(item => item.listId !== card.listId)
+            .concat(sortedCards);
+
+          return result;
+        }
+      })();
 
     case DELETE_CARD:
       return (() => {

@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faList, faCheckSquare } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -63,6 +64,8 @@ const StyledLink = styled(Link)`
 `;
 
 const Card = ({
+  id,
+  index,
   name,
   to,
   totalChecked,
@@ -73,31 +76,43 @@ const Card = ({
   const isCompleted = totalChecked === maxChecklist;
 
   return (
-    <StyledLink to={to}>
-      <Container>
-        <Text>{name}</Text>
-        {(hasDescription || hasChecklist) && (
-          <IconWrapper>
-            {hasDescription && <IconDescription icon={faList} color="#777" />}
-            {hasChecklist && (
-              <IconCheckWrapper isCompleted={isCompleted}>
-                <Icon
-                  icon={faCheckSquare}
-                  color={isCompleted ? "white" : "#777"}
-                />
-                <CheckValue color={isCompleted ? "white" : "#777"}>
-                  {totalChecked}/{maxChecklist}
-                </CheckValue>
-              </IconCheckWrapper>
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <StyledLink to={to}>
+          <Container
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <Text>{name}</Text>
+            {(hasDescription || hasChecklist) && (
+              <IconWrapper>
+                {hasDescription && (
+                  <IconDescription icon={faList} color="#777" />
+                )}
+                {hasChecklist && (
+                  <IconCheckWrapper isCompleted={isCompleted}>
+                    <Icon
+                      icon={faCheckSquare}
+                      color={isCompleted ? "white" : "#777"}
+                    />
+                    <CheckValue color={isCompleted ? "white" : "#777"}>
+                      {totalChecked}/{maxChecklist}
+                    </CheckValue>
+                  </IconCheckWrapper>
+                )}
+              </IconWrapper>
             )}
-          </IconWrapper>
-        )}
-      </Container>
-    </StyledLink>
+          </Container>
+        </StyledLink>
+      )}
+    </Draggable>
   );
 };
 
 Card.propTypes = {
+  id: PropTypes.string,
+  index: PropTypes.number,
   name: PropTypes.string,
   to: PropTypes.string,
   totalChecked: PropTypes.number,

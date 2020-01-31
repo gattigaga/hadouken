@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
+import { Droppable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -116,6 +117,8 @@ const Input = styled.input`
 `;
 
 const List = ({
+  id,
+  index,
   name,
   children,
   isWillAdd,
@@ -200,33 +203,38 @@ const List = ({
           <Icon icon={faTimes} />
         </CloseButton>
       </Header>
-      <Content>
-        {children}
-        {isWillAdd && (
-          <NewCard
-            ref={refInputNewCard}
-            placeholder="Enter a name for this card..."
-            onClick={event => event.stopPropagation()}
-            onChange={event => setNewCard(event.target.value)}
-            onKeyDown={event => {
-              switch (event.keyCode) {
-                case 13: // Enter is pressed
-                  onClickApplyAdd(newCard);
-                  setTimeout(() => setNewCard(""), 50);
-                  break;
+      <Droppable droppableId={id}>
+        {provided => (
+          <Content ref={provided.innerRef} {...provided.droppableProps}>
+            {children}
+            {provided.placeholder}
+            {isWillAdd && (
+              <NewCard
+                ref={refInputNewCard}
+                placeholder="Enter a name for this card..."
+                onClick={event => event.stopPropagation()}
+                onChange={event => setNewCard(event.target.value)}
+                onKeyDown={event => {
+                  switch (event.keyCode) {
+                    case 13: // Enter is pressed
+                      onClickApplyAdd(newCard);
+                      setTimeout(() => setNewCard(""), 50);
+                      break;
 
-                case 27: // Escape is pressed
-                  onClickCancelAdd();
-                  break;
+                    case 27: // Escape is pressed
+                      onClickCancelAdd();
+                      break;
 
-                default:
-                  break;
-              }
-            }}
-            value={newCard}
-          />
+                    default:
+                      break;
+                  }
+                }}
+                value={newCard}
+              />
+            )}
+          </Content>
         )}
-      </Content>
+      </Droppable>
       <Footer>
         {isWillAdd ? (
           <>
@@ -265,6 +273,8 @@ const List = ({
 };
 
 List.propTypes = {
+  id: PropTypes.string,
+  index: PropTypes.string,
   name: PropTypes.string,
   children: PropTypes.array,
   isWillAdd: PropTypes.bool,

@@ -14,7 +14,8 @@ import {
   CREATE_CHECK,
   UPDATE_CHECK,
   MOVE_CARD,
-  MOVE_LIST
+  MOVE_LIST,
+  MOVE_CHECK
 } from "./actions";
 
 export const createBoard = name => {
@@ -170,7 +171,7 @@ export const createCheck = ({ cardId, label }) => {
 
 export const updateCheck = (id, data) => {
   const validData = {};
-  const dataKeys = ["label", "isChecked", "index"];
+  const dataKeys = ["label", "isChecked"];
 
   dataKeys.forEach(key => {
     if (data[key] === undefined) return;
@@ -180,6 +181,22 @@ export const updateCheck = (id, data) => {
 
   return {
     type: UPDATE_CHECK,
+    payload: { id, data: validData }
+  };
+};
+
+export const moveCheck = (id, data) => {
+  const validData = {};
+  const dataKeys = ["index"];
+
+  dataKeys.forEach(key => {
+    if (data[key] === undefined) return;
+
+    validData[key] = data[key];
+  });
+
+  return {
+    type: MOVE_CHECK,
     payload: { id, data: validData }
   };
 };

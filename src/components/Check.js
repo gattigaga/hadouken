@@ -14,6 +14,7 @@ const Container = styled.div`
   padding-bottom: 12px;
   border-radius: 4px;
   display: flex;
+  background: #eee;
 
   &:hover {
     background: #e7e7e7;

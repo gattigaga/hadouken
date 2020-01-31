@@ -13,7 +13,8 @@ import {
   DELETE_CHECK,
   CREATE_CHECK,
   UPDATE_CHECK,
-  MOVE_CARD
+  MOVE_CARD,
+  MOVE_LIST
 } from "./actions";
 
 export const createBoard = name => {
@@ -59,7 +60,7 @@ export const createList = ({ boardId, name }) => {
 
 export const updateList = (id, data) => {
   const validData = {};
-  const dataKeys = ["name", "index"];
+  const dataKeys = ["name"];
 
   dataKeys.forEach(key => {
     if (data[key] === undefined) return;
@@ -69,6 +70,22 @@ export const updateList = (id, data) => {
 
   return {
     type: UPDATE_LIST,
+    payload: { id, data: validData }
+  };
+};
+
+export const moveList = (id, data) => {
+  const validData = {};
+  const dataKeys = ["index"];
+
+  dataKeys.forEach(key => {
+    if (data[key] === undefined) return;
+
+    validData[key] = data[key];
+  });
+
+  return {
+    type: MOVE_LIST,
     payload: { id, data: validData }
   };
 };

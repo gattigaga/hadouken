@@ -4,6 +4,7 @@ export const DELETE_BOARD = "DELETE_BOARD";
 
 export const CREATE_LIST = "CREATE_LIST";
 export const UPDATE_LIST = "UPDATE_LIST";
+export const MOVE_LIST = "MOVE_LIST";
 export const DELETE_LIST = "DELETE_LIST";
 
 export const CREATE_CARD = "CREATE_CARD";

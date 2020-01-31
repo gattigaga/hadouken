@@ -22,7 +22,9 @@ import {
   updateBoard,
   deleteBoard,
   moveCard,
-  moveList
+  moveList,
+  deleteCard,
+  deleteCheck
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -195,6 +197,10 @@ const BoardDetail = () => {
   const isUpdateBoardName = current.matches("updateBoardName");
   const board = boards.find(board => board.slug === boardSlug);
 
+  const currentLists = lists
+    .filter(list => list.boardId === board.id)
+    .sort((a, b) => a.index - b.index);
+
   const [newBoardName, setNewBoardName] = useState("");
 
   useEffect(() => {
@@ -298,10 +304,12 @@ const BoardDetail = () => {
           >
             {provided => (
               <ListWrapper ref={provided.innerRef} {...provided.droppableProps}>
-                {lists
-                  .filter(list => list.boardId === board.id)
-                  .sort((a, b) => a.index - b.index)
-                  .map(list => (
+                {currentLists.map(list => {
+                  const currentCards = cards
+                    .filter(card => card.listId === list.id)
+                    .sort((a, b) => a.index - b.index);
+
+                  return (
                     <List
                       key={list.id}
                       id={list.id}
@@ -317,6 +325,18 @@ const BoardDetail = () => {
                         send("UPDATE_LIST_NAME", { listId: list.id })
                       }
                       onClickClose={() => {
+                        currentCards.forEach(card => {
+                          const currentChecks = checks.filter(
+                            check => check.cardId === card.id
+                          );
+
+                          currentChecks.forEach(check => {
+                            dispatch(deleteCheck(check.id));
+                          });
+
+                          dispatch(deleteCard(card.id));
+                        });
+
                         dispatch(deleteList(list.id));
                       }}
                       onClickAdd={() =>
@@ -342,34 +362,32 @@ const BoardDetail = () => {
                         current.context.listId === list.id
                       }
                     >
-                      {cards
-                        .filter(card => card.listId === list.id)
-                        .sort((a, b) => a.index - b.index)
-                        .map(card => {
-                          const currentChecks = checks.filter(
-                            check => check.cardId === card.id
-                          );
+                      {currentCards.map(card => {
+                        const currentChecks = checks.filter(
+                          check => check.cardId === card.id
+                        );
 
-                          const totalChecked = currentChecks.filter(
-                            check => !!check.isChecked
-                          ).length;
+                        const totalChecked = currentChecks.filter(
+                          check => !!check.isChecked
+                        ).length;
 
-                          return (
-                            <Card
-                              key={card.id}
-                              id={card.id}
-                              index={card.index}
-                              name={card.name}
-                              to={`${board.slug}/${card.slug}`}
-                              totalChecked={totalChecked}
-                              maxChecklist={currentChecks.length}
-                              hasDescription={card.description}
-                              hasChecklist={!!currentChecks.length}
-                            />
-                          );
-                        })}
+                        return (
+                          <Card
+                            key={card.id}
+                            id={card.id}
+                            index={card.index}
+                            name={card.name}
+                            to={`${board.slug}/${card.slug}`}
+                            totalChecked={totalChecked}
+                            maxChecklist={currentChecks.length}
+                            hasDescription={card.description}
+                            hasChecklist={!!currentChecks.length}
+                          />
+                        );
+                      })}
                     </List>
-                  ))}
+                  );
+                })}
                 {provided.placeholder}
                 <CreateList
                   onClickAdd={() => send("CREATE_LIST")}

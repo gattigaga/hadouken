@@ -40,6 +40,7 @@ const Name = styled.h2`
 
 const Content = styled.div`
   padding: 0px 8px;
+  min-height: 16px;
   max-height: 400px;
   overflow-y: auto;
 

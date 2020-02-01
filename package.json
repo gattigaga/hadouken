@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@xstate/react": "^0.8.1",
     "array-move": "^2.2.1",
+    "autosize": "^4.0.2",
     "chroma-js": "^2.1.0",
     "date-fns": "^2.9.0",
     "normalize.css": "^8.0.1",

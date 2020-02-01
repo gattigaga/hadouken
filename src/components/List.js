@@ -5,6 +5,7 @@ import chroma from "chroma-js";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import autosize from "autosize";
 
 import Button from "./Button";
 
@@ -154,6 +155,7 @@ const List = ({
 
     if (isWillAdd) {
       refInputNewCard.current.focus();
+      autosize(refInputNewCard.current);
     }
   }, [isWillAdd]);
 

@@ -42,6 +42,18 @@ const Content = styled.div`
   padding: 0px 8px;
   max-height: 400px;
   overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ddd;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+  }
 `;
 
 const Icon = styled(FontAwesomeIcon)`

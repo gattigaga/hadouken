@@ -92,6 +92,7 @@ const Description = styled.p`
   font-family: "Roboto";
   color: #777;
   margin: 0px;
+  line-height: 1.5em;
   cursor: pointer;
 
   ${({ isEmpty }) =>
@@ -127,6 +128,7 @@ const Textarea = styled.textarea`
   font-size: 14px;
   outline: none;
   padding: 8px;
+  line-height: 1.5em;
   margin-right: 24px;
   margin-bottom: 8px;
   box-sizing: border-box;

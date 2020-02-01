@@ -37,6 +37,7 @@ const Label = styled.p`
 
 const List = styled.div`
   width: 280px;
+  flex-shrink: 0;
   background: #eee;
   border-radius: 4px;
 `;

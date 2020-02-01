@@ -13,6 +13,7 @@ const Container = styled.div`
   margin-right: 12px;
   background: #eee;
   border-radius: 4px;
+  flex-shrink: 0;
 `;
 
 const Header = styled.div`

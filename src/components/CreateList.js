@@ -10,6 +10,7 @@ import Button from "./Button";
 const Container = styled.button`
   width: 280px;
   height: 40px;
+  flex-shrink: 0;
   color: white;
   display: flex;
   border: 0px;

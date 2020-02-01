@@ -67,6 +67,8 @@ const Input = styled.input`
 const ListWrapper = styled.div`
   display: flex;
   align-items: flex-start;
+  overflow-x: auto;
+  height: 80vh;
 `;
 
 const Header = styled.header`

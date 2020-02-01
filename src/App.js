@@ -9,7 +9,7 @@ import { store } from "./store/store";
 
 const App = () => (
   <Provider store={store}>
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Switch>
         <Route path="/:boardSlug">
           <BoardDetail />

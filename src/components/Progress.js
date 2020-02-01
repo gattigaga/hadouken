@@ -38,7 +38,7 @@ const Progress = ({ value }) => (
     <Meter
       value={value}
       max={100}
-      color={value === 100 ? "#2ecc71" : "#3498db"}
+      color={value >= 100 ? "#2ecc71" : "#3498db"}
     />
   </Container>
 );

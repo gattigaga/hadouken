@@ -69,6 +69,24 @@ const ListWrapper = styled.div`
   align-items: flex-start;
   overflow-x: auto;
   height: 80vh;
+
+  &::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background: ${chroma("#3498db")
+      .darken(0.3)
+      .hex()};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: ${chroma("#3498db")
+      .brighten(0.5)
+      .hex()};
+  }
 `;
 
 const Header = styled.header`

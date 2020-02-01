@@ -307,7 +307,7 @@ const BoardDetail = () => {
             </Title>
             <Button
               label="Delete"
-              color="#34495e"
+              color="#5cb5fa"
               onClick={event => {
                 event.stopPropagation();
                 history.goBack();

@@ -9,8 +9,8 @@ import ModalCreateBoard from "../components/ModalCreateBoard";
 import { createBoard } from "../store/actionCreators";
 
 const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   box-sizing: border-box;
 `;
 
@@ -18,6 +18,7 @@ const Wrapper = styled.div`
   width: 800px;
   margin: auto;
   padding-top: 48px;
+  padding-bottom: 96px;
 `;
 
 const Title = styled.h1`

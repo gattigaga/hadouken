@@ -107,8 +107,6 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
   );
 };
 
-Modal.setAppElement("#root");
-
 ModalCreateBoard.propTypes = {
   isOpen: PropTypes.bool,
   onClickCreate: PropTypes.bool,

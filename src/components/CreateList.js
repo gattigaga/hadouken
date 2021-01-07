@@ -13,6 +13,7 @@ const Container = styled.button`
   flex-shrink: 0;
   color: white;
   display: flex;
+  align-items: center;
   border: 0px;
   border-radius: 4px;
   padding: 0px 16px;

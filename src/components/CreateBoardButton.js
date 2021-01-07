@@ -20,14 +20,14 @@ const Label = styled.p`
   margin: auto;
 `;
 
-const CreateBoard = ({ onClick }) => (
+const CreateBoardButton = ({ onClick }) => (
   <Container onClick={onClick}>
     <Label>Create New Board</Label>
   </Container>
 );
 
-CreateBoard.propTypes = {
+CreateBoardButton.propTypes = {
   onClick: PropTypes.func
 };
 
-export default CreateBoard;
+export default CreateBoardButton;

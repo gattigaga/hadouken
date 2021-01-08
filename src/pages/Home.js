@@ -24,8 +24,9 @@ const Wrapper = styled.div`
 const Title = styled.h1`
   font-family: "Roboto";
   font-size: 64px;
-  letter-spacing: -4px;
+  letter-spacing: -3px;
   margin-top: 0px;
+  margin-bottom: 0px;
   color: #333;
 `;
 
@@ -33,6 +34,14 @@ const BoardList = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 180px);
   grid-gap: 26px;
+`;
+
+const CreatorName = styled.p`
+  font-family: "Roboto";
+  font-size: 14px;
+  color: #aaa;
+  margin-top: 0px;
+  margin-bottom: 48px;
 `;
 
 const Home = () => {
@@ -47,6 +56,7 @@ const Home = () => {
       </Helmet>
       <Wrapper>
         <Title>Hadouken</Title>
+        <CreatorName>Created by Gattigaga Hayyuta Dewa</CreatorName>
         <BoardList>
           {boards.map(board => (
             <Board key={board.id} name={board.name} to={board.slug} />

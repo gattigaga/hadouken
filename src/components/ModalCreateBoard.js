@@ -109,8 +109,8 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
 
 ModalCreateBoard.propTypes = {
   isOpen: PropTypes.bool,
-  onClickCreate: PropTypes.bool,
-  onClickClose: PropTypes.bool
+  onClickCreate: PropTypes.func,
+  onClickClose: PropTypes.func
 };
 
 export default ModalCreateBoard;

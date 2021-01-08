@@ -7,7 +7,7 @@ import { Machine, assign } from "xstate";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useMachine } from "@xstate/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import chroma from "chroma-js";
 
 import List from "../components/List";
@@ -291,7 +291,7 @@ const BoardDetail = () => {
         ) : (
           <Header>
             <Icon
-              icon={faHome}
+              icon={faChevronLeft}
               onClick={event => {
                 event.stopPropagation();
                 history.goBack();

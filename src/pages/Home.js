@@ -67,7 +67,7 @@ const Home = () => {
       <ModalCreateBoard
         onClickClose={() => setIsCreateOpen(false)}
         onClickCreate={(boardName) => {
-          dispatch(createBoard(boardName));
+          dispatch(createBoard({ name: boardName }));
           setIsCreateOpen(false);
         }}
         isOpen={isCreateOpen}

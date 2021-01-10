@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import chroma from "chroma-js";
 
-import List from "../components/List";
+import Group from "../components/Group";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import CreateGroupButton from "../components/CreateGroupButton";
@@ -65,7 +65,7 @@ const Input = styled.input`
   border: 0px;
 `;
 
-const ListWrapper = styled.div`
+const GroupWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   overflow-x: auto;
@@ -346,14 +346,17 @@ const BoardDetail = () => {
             type="LIST"
           >
             {(provided) => (
-              <ListWrapper ref={provided.innerRef} {...provided.droppableProps}>
+              <GroupWrapper
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
                 {currentLists.map((list) => {
                   const currentCards = cards
                     .filter((card) => card.listId === list.id)
                     .sort((a, b) => a.index - b.index);
 
                   return (
-                    <List
+                    <Group
                       key={list.id}
                       id={list.id}
                       index={list.index}
@@ -428,7 +431,7 @@ const BoardDetail = () => {
                           />
                         );
                       })}
-                    </List>
+                    </Group>
                   );
                 })}
                 {provided.placeholder}
@@ -450,7 +453,7 @@ const BoardDetail = () => {
                 ) : (
                   <CreateGroupButton onClick={() => send("CREATE_LIST")} />
                 )}
-              </ListWrapper>
+              </GroupWrapper>
             )}
           </Droppable>
         </DragDropContext>

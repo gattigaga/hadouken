@@ -39,10 +39,7 @@ const Input = styled.input`
   padding: 0px 12px;
   box-sizing: border-box;
   border-radius: 4px;
-  border: 2px solid
-    ${chroma("#3498db")
-      .darken(0.6)
-      .hex()};
+  border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
 `;
 
 const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
@@ -62,9 +59,9 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
           type="text"
           placeholder="Enter group name..."
           value={name}
-          onClick={event => event.stopPropagation()}
-          onChange={event => setName(event.target.value)}
-          onKeyDown={event => {
+          onClick={(event) => event.stopPropagation()}
+          onChange={(event) => setName(event.target.value)}
+          onKeyDown={(event) => {
             switch (event.keyCode) {
               case 13: // Enter is pressed
                 onClickApplyAdd(name);
@@ -83,7 +80,7 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
       <Footer>
         <ApplyButton
           label="Apply"
-          onClick={event => {
+          onClick={(event) => {
             event.stopPropagation();
             onClickApplyAdd(name);
           }}
@@ -91,7 +88,7 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
         <Button
           label="Cancel"
           color="#e74c3c"
-          onClick={event => {
+          onClick={(event) => {
             event.stopPropagation();
             onClickCancelAdd();
           }}
@@ -103,7 +100,7 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
 
 CreateGroupForm.propTypes = {
   onClickApplyAdd: PropTypes.func,
-  onClickCancelAdd: PropTypes.func
+  onClickCancelAdd: PropTypes.func,
 };
 
 export default CreateGroupForm;

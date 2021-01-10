@@ -22,7 +22,7 @@ const CreateBoardButton = ({ onClick }) => (
 );
 
 CreateBoardButton.propTypes = {
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
 export default CreateBoardButton;

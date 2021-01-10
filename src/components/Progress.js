@@ -44,7 +44,7 @@ const Progress = ({ value }) => (
 );
 
 Progress.propTypes = {
-  value: PropTypes.number
+  value: PropTypes.number,
 };
 
 export default Progress;

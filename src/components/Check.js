@@ -85,7 +85,7 @@ const Check = ({
   onClickLabel,
   onClickDelete,
   onClickApplyUpdate,
-  onClickCancelUpdate
+  onClickCancelUpdate,
 }) => {
   const [newLabel, setNewLabel] = useState(label);
   const [isHovered, setIsHovered] = useState(false);
@@ -103,7 +103,7 @@ const Check = ({
 
   return (
     <Draggable draggableId={id} index={index}>
-      {provided => (
+      {(provided) => (
         <Container
           ref={provided.innerRef}
           onMouseEnter={() => setIsHovered(true)}
@@ -113,7 +113,7 @@ const Check = ({
         >
           <Checkbox
             type="checkbox"
-            onChange={event => {
+            onChange={(event) => {
               event.stopPropagation();
               onClickCheck();
             }}
@@ -126,9 +126,9 @@ const Check = ({
                   ref={refInput}
                   placeholder="Enter a label..."
                   value={newLabel}
-                  onClick={event => event.stopPropagation()}
-                  onChange={event => setNewLabel(event.target.value)}
-                  onKeyDown={event => {
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) => setNewLabel(event.target.value)}
+                  onKeyDown={(event) => {
                     switch (event.keyCode) {
                       case 13: // Enter is pressed
                         onClickApplyUpdate(newLabel);
@@ -147,7 +147,7 @@ const Check = ({
                 <Row>
                   <ApplyButton
                     label="Apply"
-                    onClick={event => {
+                    onClick={(event) => {
                       event.stopPropagation();
                       onClickApplyUpdate(newLabel);
                     }}
@@ -155,7 +155,7 @@ const Check = ({
                   <Button
                     label="Cancel"
                     color="#e74c3c"
-                    onClick={event => {
+                    onClick={(event) => {
                       event.stopPropagation();
                       setNewLabel(label);
                       onClickCancelUpdate();
@@ -165,7 +165,7 @@ const Check = ({
               </>
             ) : (
               <Label
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation();
                   onClickLabel();
                 }}
@@ -178,7 +178,7 @@ const Check = ({
           {isHovered && (
             <Icon
               icon={faTimes}
-              onClick={event => {
+              onClick={(event) => {
                 event.stopPropagation();
                 onClickDelete();
               }}
@@ -200,7 +200,7 @@ Check.propTypes = {
   onClickLabel: PropTypes.func,
   onClickDelete: PropTypes.func,
   onClickApplyUpdate: PropTypes.func,
-  onClickCancelUpdate: PropTypes.func
+  onClickCancelUpdate: PropTypes.func,
 };
 
 export default Check;

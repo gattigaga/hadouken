@@ -35,7 +35,7 @@ const Board = ({ name, to }) => (
 
 Board.propTypes = {
   name: PropTypes.string,
-  to: PropTypes.string
+  to: PropTypes.string,
 };
 
 export default Board;

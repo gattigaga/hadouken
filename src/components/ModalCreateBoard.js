@@ -31,9 +31,7 @@ const Input = styled.input`
   font-weight: bold;
   font-size: 16px;
   color: white;
-  background: ${chroma("#3498db")
-    .brighten(0.5)
-    .hex()};
+  background: ${chroma("#3498db").brighten(0.5).hex()};
 `;
 
 const Icon = styled(FontAwesomeIcon)`
@@ -44,15 +42,15 @@ const Icon = styled(FontAwesomeIcon)`
 
 const modalStyles = {
   overlay: {
-    background: "rgba(0, 0, 0, 0.7)"
+    background: "rgba(0, 0, 0, 0.7)",
   },
   content: {
     background: "none",
     border: 0,
     width: 320,
     padding: 0,
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 };
 
 const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
@@ -76,8 +74,8 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
           type="text"
           name="board"
           value={boardName}
-          onChange={event => setBoardName(event.target.value)}
-          onKeyDown={event => {
+          onChange={(event) => setBoardName(event.target.value)}
+          onKeyDown={(event) => {
             const isEnterPressed = event.keyCode === 13;
 
             if (isEnterPressed && boardName) {
@@ -110,7 +108,7 @@ const ModalCreateBoard = ({ isOpen, onClickCreate, onClickClose }) => {
 ModalCreateBoard.propTypes = {
   isOpen: PropTypes.bool,
   onClickCreate: PropTypes.func,
-  onClickClose: PropTypes.func
+  onClickClose: PropTypes.func,
 };
 
 export default ModalCreateBoard;

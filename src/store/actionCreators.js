@@ -15,7 +15,7 @@ import {
   UPDATE_CHECK,
   MOVE_CARD,
   MOVE_GROUP,
-  MOVE_CHECK
+  MOVE_CHECK,
 } from "./actions";
 
 /**
@@ -36,8 +36,8 @@ export const createBoard = ({ name }) => {
       id,
       slug,
       name,
-      timestamp
-    }
+      timestamp,
+    },
   };
 };
 
@@ -54,9 +54,9 @@ export const updateBoard = (id, { name }) => ({
   payload: {
     id,
     data: {
-      name
-    }
-  }
+      name,
+    },
+  },
 });
 
 /**
@@ -65,9 +65,9 @@ export const updateBoard = (id, { name }) => ({
  * @param {String} id Board ID
  * @return {Object} Action
  */
-export const deleteBoard = id => ({
+export const deleteBoard = (id) => ({
   type: DELETE_BOARD,
-  payload: id
+  payload: id,
 });
 
 /**
@@ -88,8 +88,8 @@ export const createGroup = ({ boardId, name }) => {
       id,
       boardId,
       name,
-      timestamp
-    }
+      timestamp,
+    },
   };
 };
 
@@ -106,9 +106,9 @@ export const updateGroup = (id, { name }) => ({
   payload: {
     id,
     data: {
-      name
-    }
-  }
+      name,
+    },
+  },
 });
 
 /**
@@ -124,9 +124,9 @@ export const moveGroup = (id, { index }) => ({
   payload: {
     id,
     data: {
-      index
-    }
-  }
+      index,
+    },
+  },
 });
 
 /**
@@ -135,9 +135,9 @@ export const moveGroup = (id, { index }) => ({
  * @param {String} id Group ID
  * @return {Object} Action
  */
-export const deleteGroup = id => ({
+export const deleteGroup = (id) => ({
   type: DELETE_GROUP,
-  payload: id
+  payload: id,
 });
 
 /**
@@ -162,8 +162,8 @@ export const createCard = ({ groupId, name }) => {
       slug,
       name,
       description,
-      timestamp
-    }
+      timestamp,
+    },
   };
 };
 
@@ -182,9 +182,9 @@ export const updateCard = (id, { name, description }) => ({
     id,
     data: {
       name,
-      description
-    }
-  }
+      description,
+    },
+  },
 });
 
 /**
@@ -202,9 +202,9 @@ export const moveCard = (id, { groupId, index }) => ({
     id,
     data: {
       groupId,
-      index
-    }
-  }
+      index,
+    },
+  },
 });
 
 /**
@@ -213,9 +213,9 @@ export const moveCard = (id, { groupId, index }) => ({
  * @param {String} id Card ID
  * @return {Object} Action
  */
-export const deleteCard = id => ({
+export const deleteCard = (id) => ({
   type: DELETE_CARD,
-  payload: id
+  payload: id,
 });
 
 /**
@@ -238,8 +238,8 @@ export const createCheck = ({ cardId, label }) => {
       cardId,
       label,
       isChecked,
-      timestamp
-    }
+      timestamp,
+    },
   };
 };
 
@@ -258,9 +258,9 @@ export const updateCheck = (id, { label, isChecked }) => ({
     id,
     data: {
       label,
-      isChecked
-    }
-  }
+      isChecked,
+    },
+  },
 });
 
 /**
@@ -276,9 +276,9 @@ export const moveCheck = (id, { index }) => ({
   payload: {
     id,
     data: {
-      index
-    }
-  }
+      index,
+    },
+  },
 });
 
 /**
@@ -287,7 +287,7 @@ export const moveCheck = (id, { index }) => ({
  * @param {String} id Check ID
  * @return {Object} Action
  */
-export const deleteCheck = id => ({
+export const deleteCheck = (id) => ({
   type: DELETE_CHECK,
-  payload: id
+  payload: id,
 });

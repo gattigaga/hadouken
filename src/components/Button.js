@@ -14,10 +14,7 @@ const Content = styled.button`
   cursor: pointer;
 
   &:hover {
-    background: ${({ color }) =>
-      chroma(color)
-        .brighten(0.3)
-        .hex()};
+    background: ${({ color }) => chroma(color).brighten(0.3).hex()};
   }
 
   &:disabled {
@@ -42,11 +39,11 @@ Button.propTypes = {
   label: PropTypes.string,
   color: PropTypes.string,
   onClick: PropTypes.func,
-  isDisabled: PropTypes.bool
+  isDisabled: PropTypes.bool,
 };
 
 Button.defaultProps = {
-  color: "#2ecc71"
+  color: "#2ecc71",
 };
 
 export default Button;

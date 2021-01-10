@@ -77,16 +77,12 @@ const GroupWrapper = styled.div`
 
   &::-webkit-scrollbar-track {
     border-radius: 8px;
-    background: ${chroma("#3498db")
-      .darken(0.3)
-      .hex()};
+    background: ${chroma("#3498db").darken(0.3).hex()};
   }
 
   &::-webkit-scrollbar-thumb {
     border-radius: 8px;
-    background: ${chroma("#3498db")
-      .brighten(0.5)
-      .hex()};
+    background: ${chroma("#3498db").brighten(0.5).hex()};
   }
 `;
 
@@ -100,9 +96,7 @@ const Icon = styled(FontAwesomeIcon)`
   font-size: 32px;
   margin-right: 32px;
   cursor: pointer;
-  color: ${chroma("#3498db")
-    .brighten(0.5)
-    .hex()};
+  color: ${chroma("#3498db").brighten(0.5).hex()};
 `;
 
 const machine = Machine({

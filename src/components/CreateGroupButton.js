@@ -16,14 +16,10 @@ const Container = styled.button`
   border-radius: 4px;
   padding: 0px 16px;
   cursor: pointer;
-  background: ${chroma("#3498db")
-    .brighten(0.5)
-    .hex()};
+  background: ${chroma("#3498db").brighten(0.5).hex()};
 
   &:hover {
-    background: ${chroma("#3498db")
-      .brighten(0.6)
-      .hex()};
+    background: ${chroma("#3498db").brighten(0.6).hex()};
   }
 `;
 
@@ -36,7 +32,7 @@ const Label = styled.p`
 
 const CreateGroupButton = ({ onClick }) => (
   <Container
-    onClick={event => {
+    onClick={(event) => {
       event.stopPropagation();
       onClick();
     }}
@@ -47,7 +43,7 @@ const CreateGroupButton = ({ onClick }) => (
 );
 
 CreateGroupButton.propTypes = {
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
 export default CreateGroupButton;

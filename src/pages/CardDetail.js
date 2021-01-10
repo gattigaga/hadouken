@@ -10,7 +10,7 @@ import {
   faTimes,
   faIdCard,
   faList,
-  faCheckSquare
+  faCheckSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Machine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
@@ -24,7 +24,7 @@ import {
   updateCheck,
   deleteCheck,
   deleteCard,
-  moveCheck
+  moveCheck,
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -115,10 +115,7 @@ const Input = styled.input`
   margin-right: 24px;
   box-sizing: border-box;
   border-radius: 4px;
-  border: 2px solid
-    ${chroma("#3498db")
-      .darken(0.6)
-      .hex()};
+  border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
 `;
 
 const Textarea = styled.textarea`
@@ -134,10 +131,7 @@ const Textarea = styled.textarea`
   box-sizing: border-box;
   resize: none;
   border-radius: 4px;
-  border: 2px solid
-    ${chroma("#3498db")
-      .darken(0.6)
-      .hex()};
+  border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
 `;
 
 const SectionHeader = styled.div`
@@ -176,15 +170,15 @@ const DeleteButton = styled.span`
 
 const modalStyles = {
   overlay: {
-    background: "rgba(0, 0, 0, 0.7)"
+    background: "rgba(0, 0, 0, 0.7)",
   },
   content: {
     background: "none",
     border: 0,
     width: 640,
     padding: 0,
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 };
 
 const machine = Machine({
@@ -199,10 +193,10 @@ const machine = Machine({
         UPDATE_CHECK: {
           target: "updateCheck",
           actions: assign({
-            checkId: (_, event) => event.checkId
-          })
-        }
-      }
+            checkId: (_, event) => event.checkId,
+          }),
+        },
+      },
     },
     updateCardName: {
       on: {
@@ -212,10 +206,10 @@ const machine = Machine({
         UPDATE_CHECK: {
           target: "updateCheck",
           actions: assign({
-            checkId: (_, event) => event.checkId
-          })
-        }
-      }
+            checkId: (_, event) => event.checkId,
+          }),
+        },
+      },
     },
     updateCardDescription: {
       on: {
@@ -225,10 +219,10 @@ const machine = Machine({
         UPDATE_CHECK: {
           target: "updateCheck",
           actions: assign({
-            checkId: (_, event) => event.checkId
-          })
-        }
-      }
+            checkId: (_, event) => event.checkId,
+          }),
+        },
+      },
     },
     createCheck: {
       on: {
@@ -238,10 +232,10 @@ const machine = Machine({
         UPDATE_CHECK: {
           target: "updateCheck",
           actions: assign({
-            checkId: (_, event) => event.checkId
-          })
-        }
-      }
+            checkId: (_, event) => event.checkId,
+          }),
+        },
+      },
     },
     updateCheck: {
       on: {
@@ -252,18 +246,18 @@ const machine = Machine({
         UPDATE_CHECK: {
           target: "updateCheck",
           actions: assign({
-            checkId: (_, event) => event.checkId
-          })
-        }
-      }
-    }
-  }
+            checkId: (_, event) => event.checkId,
+          }),
+        },
+      },
+    },
+  },
 });
 
 const CardDetail = () => {
-  const cards = useSelector(state => state.cards);
-  const lists = useSelector(state => state.lists);
-  const checks = useSelector(state => state.checks);
+  const cards = useSelector((state) => state.cards);
+  const lists = useSelector((state) => state.lists);
+  const checks = useSelector((state) => state.checks);
   const dispatch = useDispatch();
   const { cardSlug } = useParams();
   const history = useHistory();
@@ -272,10 +266,11 @@ const CardDetail = () => {
   const refInputDescription = useRef(null);
   const refInputCheck = useRef(null);
 
-  const card = cards.find(card => card.slug === cardSlug);
-  const list = lists.find(list => list.id === card.listId);
-  const currentChecks = checks.filter(check => check.cardId === card.id);
-  const totalChecked = currentChecks.filter(check => !!check.isChecked).length;
+  const card = cards.find((card) => card.slug === cardSlug);
+  const list = lists.find((list) => list.id === card.listId);
+  const currentChecks = checks.filter((check) => check.cardId === card.id);
+  const totalChecked = currentChecks.filter((check) => !!check.isChecked)
+    .length;
   const divide = totalChecked / currentChecks.length;
   const progress = Number.isNaN(divide) ? 0 : (divide * 100).toFixed(0);
   const isUpdateCardName = current.matches("updateCardName");
@@ -309,7 +304,7 @@ const CardDetail = () => {
     }
   }, [isCreateCheck]);
 
-  const reorder = result => {
+  const reorder = (result) => {
     const { source, destination, draggableId } = result;
 
     if (!destination) return;
@@ -321,7 +316,7 @@ const CardDetail = () => {
 
     dispatch(
       moveCheck(draggableId, {
-        index: destination.index
+        index: destination.index,
       })
     );
   };
@@ -350,10 +345,10 @@ const CardDetail = () => {
                 ref={refInputName}
                 type="text"
                 value={newName}
-                onClick={event => event.stopPropagation()}
-                onChange={event => setNewName(event.target.value)}
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => setNewName(event.target.value)}
                 onBlur={() => dispatch(updateCard(card.id, { name: newName }))}
-                onKeyDown={event => {
+                onKeyDown={(event) => {
                   switch (event.keyCode) {
                     case 13: // Enter is pressed
                       dispatch(updateCard(card.id, { name: newName }));
@@ -372,7 +367,7 @@ const CardDetail = () => {
               />
             ) : (
               <Name
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation();
                   send("UPDATE_CARD_NAME");
                 }}
@@ -383,12 +378,12 @@ const CardDetail = () => {
             <ListName>
               in list <strong>{list.name}</strong>{" "}
               <DeleteButton
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation();
                   history.goBack();
 
                   setTimeout(() => {
-                    currentChecks.forEach(check => {
+                    currentChecks.forEach((check) => {
                       dispatch(deleteCheck(check.id));
                     });
 
@@ -420,9 +415,9 @@ const CardDetail = () => {
                   ref={refInputDescription}
                   placeholder="Enter a description..."
                   value={newDescription}
-                  onClick={event => event.stopPropagation()}
-                  onChange={event => setNewDescription(event.target.value)}
-                  onKeyDown={event => {
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) => setNewDescription(event.target.value)}
+                  onKeyDown={(event) => {
                     const isEscapePressed = event.keyCode === 27;
 
                     if (isEscapePressed) {
@@ -434,7 +429,7 @@ const CardDetail = () => {
                 <Row>
                   <ApplyButton
                     label="Apply"
-                    onClick={event => {
+                    onClick={(event) => {
                       event.stopPropagation();
                       dispatch(
                         updateCard(card.id, { description: newDescription })
@@ -445,7 +440,7 @@ const CardDetail = () => {
                   <Button
                     label="Cancel"
                     color="#e74c3c"
-                    onClick={event => {
+                    onClick={(event) => {
                       event.stopPropagation();
                       setNewDescription(card.description);
                       send("IDLE");
@@ -455,7 +450,7 @@ const CardDetail = () => {
               </>
             ) : (
               <Description
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation();
                   send("UPDATE_CARD_DESCRIPTION");
                 }}
@@ -474,9 +469,9 @@ const CardDetail = () => {
           <Progress value={progress} />
           <DragDropContext onDragEnd={reorder}>
             <Droppable droppableId={card.id} direction="vertical" type="CHECK">
-              {provided => (
+              {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>
-                  {currentChecks.map(check => (
+                  {currentChecks.map((check) => (
                     <Check
                       key={check.id}
                       id={check.id}
@@ -491,7 +486,7 @@ const CardDetail = () => {
                       onClickLabel={() =>
                         send("UPDATE_CHECK", { checkId: check.id })
                       }
-                      onClickApplyUpdate={newLabel => {
+                      onClickApplyUpdate={(newLabel) => {
                         dispatch(updateCheck(check.id, { label: newLabel }));
                         send("IDLE");
                       }}
@@ -514,15 +509,15 @@ const CardDetail = () => {
                         height={48}
                         placeholder="Add an item"
                         value={newCheck}
-                        onClick={event => event.stopPropagation()}
-                        onChange={event => setNewCheck(event.target.value)}
-                        onKeyDown={event => {
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={(event) => setNewCheck(event.target.value)}
+                        onKeyDown={(event) => {
                           switch (event.keyCode) {
                             case 13: // Enter is pressed
                               dispatch(
                                 createCheck({
                                   cardId: card.id,
-                                  label: newCheck
+                                  label: newCheck,
                                 })
                               );
                               setTimeout(() => setNewCheck(""), 20);
@@ -541,7 +536,7 @@ const CardDetail = () => {
                       <Row>
                         <ApplyButton
                           label="Apply"
-                          onClick={event => {
+                          onClick={(event) => {
                             event.stopPropagation();
                             dispatch(
                               createCheck({ cardId: card.id, label: newCheck })
@@ -552,7 +547,7 @@ const CardDetail = () => {
                         <Button
                           label="Cancel"
                           color="#e74c3c"
-                          onClick={event => {
+                          onClick={(event) => {
                             event.stopPropagation();
                             setNewCheck("");
                             send("IDLE");
@@ -564,7 +559,7 @@ const CardDetail = () => {
                     <AddCheckButton
                       label="Add an item"
                       color="#34495e"
-                      onClick={event => {
+                      onClick={(event) => {
                         event.stopPropagation();
                         send("CREATE_CHECK");
                       }}

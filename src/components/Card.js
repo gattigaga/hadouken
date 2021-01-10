@@ -71,13 +71,13 @@ const Card = ({
   totalChecked,
   maxChecklist,
   hasDescription,
-  hasChecklist
+  hasChecklist,
 }) => {
   const isCompleted = totalChecked === maxChecklist;
 
   return (
     <Draggable draggableId={id} index={index}>
-      {provided => (
+      {(provided) => (
         <StyledLink to={to}>
           <Container
             ref={provided.innerRef}
@@ -118,7 +118,7 @@ Card.propTypes = {
   totalChecked: PropTypes.number,
   maxChecklist: PropTypes.number,
   hasDescription: PropTypes.bool,
-  hasChecklist: PropTypes.bool
+  hasChecklist: PropTypes.bool,
 };
 
 export default Card;

@@ -125,10 +125,7 @@ const Input = styled.input`
   margin-right: 24px;
   box-sizing: border-box;
   border-radius: 4px;
-  border: 2px solid
-    ${chroma("#3498db")
-      .darken(0.6)
-      .hex()};
+  border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
 `;
 
 const List = ({
@@ -143,7 +140,7 @@ const List = ({
   onClickClose,
   onClickAdd,
   onClickApplyAdd,
-  onClickCancelAdd
+  onClickCancelAdd,
 }) => {
   const [newCard, setNewCard] = useState("");
   const [newName, setNewName] = useState(name);
@@ -179,7 +176,7 @@ const List = ({
 
   return (
     <Draggable draggableId={id} index={index}>
-      {provided => (
+      {(provided) => (
         <Container
           ref={provided.innerRef}
           {...provided.draggableProps}
@@ -191,9 +188,9 @@ const List = ({
                 ref={refInputName}
                 type="text"
                 value={newName}
-                onClick={event => event.stopPropagation()}
-                onChange={event => setNewName(event.target.value)}
-                onKeyDown={event => {
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => setNewName(event.target.value)}
+                onKeyDown={(event) => {
                   switch (event.keyCode) {
                     case 13: // Enter is pressed
                     case 27: // Escape is pressed
@@ -207,7 +204,7 @@ const List = ({
               />
             ) : (
               <Name
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation();
                   onClickName();
                 }}
@@ -217,7 +214,7 @@ const List = ({
             )}
             <CloseButton
               type="button"
-              onClick={event => {
+              onClick={(event) => {
                 event.stopPropagation();
                 onClickClose();
               }}
@@ -226,7 +223,7 @@ const List = ({
             </CloseButton>
           </Header>
           <Droppable droppableId={id} type="CARD">
-            {provided => (
+            {(provided) => (
               <Content ref={provided.innerRef} {...provided.droppableProps}>
                 {children}
                 {provided.placeholder}
@@ -234,9 +231,9 @@ const List = ({
                   <NewCard
                     ref={refInputNewCard}
                     placeholder="Enter a name for this card..."
-                    onClick={event => event.stopPropagation()}
-                    onChange={event => setNewCard(event.target.value)}
-                    onKeyDown={event => {
+                    onClick={(event) => event.stopPropagation()}
+                    onChange={(event) => setNewCard(event.target.value)}
+                    onKeyDown={(event) => {
                       switch (event.keyCode) {
                         case 13: // Enter is pressed
                           onClickApplyAdd(newCard);
@@ -262,7 +259,7 @@ const List = ({
               <>
                 <ApplyButton
                   label="Apply"
-                  onClick={event => {
+                  onClick={(event) => {
                     event.stopPropagation();
                     onClickApplyAdd(newCard);
                     setTimeout(() => setNewCard(""), 50);
@@ -271,7 +268,7 @@ const List = ({
                 <Button
                   label="Cancel"
                   color="#e74c3c"
-                  onClick={event => {
+                  onClick={(event) => {
                     event.stopPropagation();
                     onClickCancelAdd();
                   }}
@@ -280,7 +277,7 @@ const List = ({
             ) : (
               <FooterButton
                 type="button"
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation();
                   onClickAdd();
                 }}
@@ -308,7 +305,7 @@ List.propTypes = {
   onClickClose: PropTypes.func,
   onClickAdd: PropTypes.func,
   onClickApplyAdd: PropTypes.func,
-  onClickCancelAdd: PropTypes.func
+  onClickCancelAdd: PropTypes.func,
 };
 
 export default List;

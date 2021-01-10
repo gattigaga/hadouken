@@ -46,7 +46,7 @@ const CreatorName = styled.p`
 
 const Home = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const boards = useSelector(state => state.boards);
+  const boards = useSelector((state) => state.boards);
   const dispatch = useDispatch();
 
   return (
@@ -58,7 +58,7 @@ const Home = () => {
         <Title>Hadouken</Title>
         <CreatorName>Created by Gattigaga Hayyuta Dewa</CreatorName>
         <BoardList>
-          {boards.map(board => (
+          {boards.map((board) => (
             <Board key={board.id} name={board.name} to={board.slug} />
           ))}
           <CreateBoardButton onClick={() => setIsCreateOpen(true)} />
@@ -66,7 +66,7 @@ const Home = () => {
       </Wrapper>
       <ModalCreateBoard
         onClickClose={() => setIsCreateOpen(false)}
-        onClickCreate={boardName => {
+        onClickCreate={(boardName) => {
           dispatch(createBoard(boardName));
           setIsCreateOpen(false);
         }}

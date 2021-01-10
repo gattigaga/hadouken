@@ -4,9 +4,9 @@ import {
   CREATE_BOARD,
   UPDATE_BOARD,
   DELETE_BOARD,
-  CREATE_LIST,
-  UPDATE_LIST,
-  DELETE_LIST,
+  CREATE_GROUP,
+  UPDATE_GROUP,
+  DELETE_GROUP,
   CREATE_CARD,
   UPDATE_CARD,
   DELETE_CARD,
@@ -14,8 +14,8 @@ import {
   UPDATE_CHECK,
   DELETE_CHECK,
   MOVE_CARD,
-  MOVE_LIST,
-  MOVE_CHECK
+  MOVE_GROUP,
+  MOVE_CHECK,
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -26,35 +26,7 @@ export const boards = (state = [], action) => {
       return [...state, payload];
 
     case UPDATE_BOARD:
-      return state.map(item => {
-        if (item.id === payload.id) {
-          return { ...item, name: payload.name };
-        }
-
-        return item;
-      });
-
-    case DELETE_BOARD:
-      return state.filter(item => item.id !== payload);
-
-    default:
-      return state;
-  }
-};
-
-export const lists = (state = [], action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case CREATE_LIST:
-      payload.index = state.filter(
-        item => item.boardId === payload.boardId
-      ).length;
-
-      return [...state, payload];
-
-    case UPDATE_LIST:
-      return state.map(item => {
+      return state.map((item) => {
         if (item.id === payload.id) {
           return { ...item, ...payload.data };
         }
@@ -62,40 +34,80 @@ export const lists = (state = [], action) => {
         return item;
       });
 
-    case MOVE_LIST:
+    case DELETE_BOARD:
+      return state.filter((item) => item.id !== payload);
+
+    default:
+      return state;
+  }
+};
+
+export const groups = (state = [], action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case CREATE_GROUP:
+      const index = state.filter((item) => item.boardId === payload.boardId)
+        .length;
+
+      return [
+        ...state,
+        {
+          ...payload,
+          index,
+        },
+      ];
+
+    case UPDATE_GROUP:
+      return state.map((item) => {
+        if (item.id === payload.id) {
+          return { ...item, ...payload.data };
+        }
+
+        return item;
+      });
+
+    case MOVE_GROUP:
       return (() => {
-        const { index: newIndex } = payload.data;
+        const group = state.find((item) => item.id === payload.id);
+        const newIndex = payload.data.index;
+        const oldIndex = group.index;
 
-        const list = state.find(item => item.id === payload.id);
-        const lists = state.filter(item => item.boardId === list.boardId);
-        const oldIndex = list.index;
-        const movedCards = arrayMove(lists, oldIndex, newIndex);
+        // Get current board's groups
+        const groups = state.filter((item) => item.boardId === group.boardId);
 
-        const sortedCards = movedCards.map((list, index) => ({
-          ...list,
-          index
-        }));
+        // Move the group from the group list and
+        // assign new index for the groups
+        const sortedGroups = arrayMove(groups, oldIndex, newIndex).map(
+          (group, index) => ({
+            ...group,
+            index,
+          })
+        );
 
         const result = state
-          .filter(item => item.boardId !== list.boardId)
-          .concat(sortedCards);
+          .filter((item) => item.boardId !== group.boardId)
+          .concat(sortedGroups);
 
         return result;
       })();
 
-    case DELETE_LIST:
+    case DELETE_GROUP:
       return (() => {
-        const afterDeletedLists = state.filter(item => item.id !== payload);
-        const list = state.find(item => item.id === payload);
+        const afterDeletedGroups = state.filter((item) => item.id !== payload);
+        const group = state.find((item) => item.id === payload);
 
-        const sortedLists = afterDeletedLists
-          .filter(item => item.boardId === list.boardId)
+        // Get current board's groups
+        // assign new index for the groups
+        // and sort it
+        const sortedGroups = afterDeletedGroups
+          .filter((item) => item.boardId === group.boardId)
           .map((item, index) => ({ ...item, index }))
           .sort((a, b) => a.index - b.index);
 
-        const result = afterDeletedLists
-          .filter(item => item.boardId !== list.boardId)
-          .concat(sortedLists);
+        const result = afterDeletedGroups
+          .filter((item) => item.boardId !== group.boardId)
+          .concat(sortedGroups);
 
         return result;
       })();
@@ -110,14 +122,19 @@ export const cards = (state = [], action) => {
 
   switch (type) {
     case CREATE_CARD:
-      payload.index = state.filter(
-        item => item.listId === payload.listId
-      ).length;
+      const index = state.filter((item) => item.groupId === payload.groupId)
+        .length;
 
-      return [...state, payload];
+      return [
+        ...state,
+        {
+          ...payload,
+          index,
+        },
+      ];
 
     case UPDATE_CARD:
-      return state.map(item => {
+      return state.map((item) => {
         if (item.id === payload.id) {
           return { ...item, ...payload.data };
         }
@@ -129,46 +146,56 @@ export const cards = (state = [], action) => {
       return (() => {
         const withIndex = (card, index) => ({
           ...card,
-          index
+          index,
         });
 
-        const { listId: newListId, index: newIndex } = payload.data;
-        const isMoveToOtherList = newListId !== undefined;
+        const { groupId: newGroupId, index: newIndex } = payload.data;
+        const isMoveToOtherGroup = newGroupId !== undefined;
+        const card = state.find((item) => item.id === payload.id);
 
-        if (isMoveToOtherList) {
-          const byListId = listId => item => item.listId === listId;
+        if (isMoveToOtherGroup) {
+          const byGroupId = (groupId) => (item) => item.groupId === groupId;
 
-          const card = state.find(item => item.id === payload.id);
-          const oldListId = card.listId;
-          const sourceCards = state.filter(byListId(oldListId));
-          const destinationCards = state.filter(byListId(newListId));
+          const oldGroupId = card.groupId;
+          // Get cards from the source group
+          const sourceCards = state.filter(byGroupId(oldGroupId));
+          // Get cards from the destination group
+          const destinationCards = state.filter(byGroupId(newGroupId));
 
+          // Remove moved card from the source group and
+          // assign new index for the cards
           const newSourceCards = sourceCards
-            .filter(item => item.id !== card.id)
+            .filter((item) => item.id !== card.id)
             .map(withIndex);
 
+          // Insert moved card to the destination group and
+          // assign new index for the cards
           const newDestinationCards = [
             ...destinationCards.slice(0, newIndex),
-            { ...card, listId: newListId },
-            ...destinationCards.slice(newIndex)
+            { ...card, groupId: newGroupId },
+            ...destinationCards.slice(newIndex),
           ].map(withIndex);
 
           const result = state
-            .filter(
-              item => item.listId !== oldListId && item.listId !== newListId
-            )
+            .filter((item) => {
+              return item.groupId !== oldGroupId && item.groupId !== newGroupId;
+            })
             .concat([...newSourceCards, ...newDestinationCards]);
 
           return result;
         } else {
-          const card = state.find(item => item.id === payload.id);
-          const cards = state.filter(item => item.listId === card.listId);
+          // Get current group's cards
+          const cards = state.filter((item) => item.groupId === card.groupId);
           const oldIndex = card.index;
-          const movedCards = arrayMove(cards, oldIndex, newIndex);
-          const sortedCards = movedCards.map(withIndex);
+
+          // Move the card from the card list and
+          // assign new index for the cards
+          const sortedCards = arrayMove(cards, oldIndex, newIndex).map(
+            withIndex
+          );
 
           const result = state
-            .filter(item => item.listId !== card.listId)
+            .filter((item) => item.groupId !== card.groupId)
             .concat(sortedCards);
 
           return result;
@@ -177,16 +204,19 @@ export const cards = (state = [], action) => {
 
     case DELETE_CARD:
       return (() => {
-        const afterDeletedCards = state.filter(item => item.id !== payload);
-        const card = state.find(item => item.id === payload);
+        const afterDeletedCards = state.filter((item) => item.id !== payload);
+        const card = state.find((item) => item.id === payload);
 
+        // Get current group's cards
+        // assign new index for the cards
+        // and sort it
         const sortedCards = afterDeletedCards
-          .filter(item => item.listId === card.listId)
+          .filter((item) => item.groupId === card.groupId)
           .map((item, index) => ({ ...item, index }))
           .sort((a, b) => a.index - b.index);
 
         const result = afterDeletedCards
-          .filter(item => item.listId !== card.listId)
+          .filter((item) => item.groupId !== card.groupId)
           .concat(sortedCards);
 
         return result;
@@ -202,14 +232,19 @@ export const checks = (state = [], action) => {
 
   switch (type) {
     case CREATE_CHECK:
-      payload.index = state.filter(
-        item => item.cardId === payload.cardId
-      ).length;
+      const index = state.filter((item) => item.cardId === payload.cardId)
+        .length;
 
-      return [...state, payload];
+      return [
+        ...state,
+        {
+          ...payload,
+          index,
+        },
+      ];
 
     case UPDATE_CHECK:
-      return state.map(item => {
+      return state.map((item) => {
         if (item.id === payload.id) {
           return { ...item, ...payload.data };
         }
@@ -219,20 +254,24 @@ export const checks = (state = [], action) => {
 
     case MOVE_CHECK:
       return (() => {
-        const { index: newIndex } = payload.data;
-
-        const check = state.find(item => item.id === payload.id);
-        const checks = state.filter(item => item.cardId === check.cardId);
+        const check = state.find((item) => item.id === payload.id);
+        const newIndex = payload.data.index;
         const oldIndex = check.index;
-        const movedChecks = arrayMove(checks, oldIndex, newIndex);
 
-        const sortedChecks = movedChecks.map((check, index) => ({
-          ...check,
-          index
-        }));
+        // Get current card's checks
+        const checks = state.filter((item) => item.cardId === check.cardId);
+
+        // Move the check from the check list and
+        // assign new index for the checks
+        const sortedChecks = arrayMove(checks, oldIndex, newIndex).map(
+          (check, index) => ({
+            ...check,
+            index,
+          })
+        );
 
         const result = state
-          .filter(item => item.cardId !== check.cardId)
+          .filter((item) => item.cardId !== check.cardId)
           .concat(sortedChecks);
 
         return result;
@@ -240,16 +279,19 @@ export const checks = (state = [], action) => {
 
     case DELETE_CHECK:
       return (() => {
-        const afterDeletedChecks = state.filter(item => item.id !== payload);
-        const check = state.find(item => item.id === payload);
+        const afterDeletedChecks = state.filter((item) => item.id !== payload);
+        const check = state.find((item) => item.id === payload);
 
+        // Get current card's checks
+        // assign new index for the checks
+        // and sort it
         const sortedChecks = afterDeletedChecks
-          .filter(item => item.cardId === check.cardId)
+          .filter((item) => item.cardId === check.cardId)
           .map((item, index) => ({ ...item, index }))
           .sort((a, b) => a.index - b.index);
 
         const result = afterDeletedChecks
-          .filter(item => item.cardId !== check.cardId)
+          .filter((item) => item.cardId !== check.cardId)
           .concat(sortedChecks);
 
         return result;

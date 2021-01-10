@@ -16,15 +16,15 @@ import Card from "../components/board-detail/Card";
 import CreateGroupButton from "../components/board-detail/CreateGroupButton";
 import CreateGroupForm from "../components/board-detail/CreateGroupForm";
 import {
-  createList,
-  deleteList,
-  createCard,
-  updateList,
   updateBoard,
   deleteBoard,
-  moveCard,
-  moveList,
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  moveGroup,
+  createCard,
   deleteCard,
+  moveCard,
   deleteCheck,
 } from "../store/actionCreators";
 
@@ -200,7 +200,7 @@ const machine = Machine({
 
 const BoardDetail = () => {
   const boards = useSelector((state) => state.boards);
-  const lists = useSelector((state) => state.lists);
+  const groups = useSelector((state) => state.groups);
   const cards = useSelector((state) => state.cards);
   const checks = useSelector((state) => state.checks);
   const dispatch = useDispatch();
@@ -212,7 +212,7 @@ const BoardDetail = () => {
   const isUpdateBoardName = current.matches("updateBoardName");
   const board = boards.find((board) => board.slug === boardSlug);
 
-  const currentLists = lists
+  const currentLists = groups
     .filter((list) => list.boardId === board.id)
     .sort((a, b) => a.index - b.index);
 
@@ -240,7 +240,7 @@ const BoardDetail = () => {
 
     if (type === "LIST") {
       dispatch(
-        moveList(draggableId, {
+        moveGroup(draggableId, {
           index: destination.index,
         })
       );
@@ -324,7 +324,7 @@ const BoardDetail = () => {
                       dispatch(deleteCard(card.id));
                     });
 
-                    dispatch(deleteList(list.id));
+                    dispatch(deleteGroup(list.id));
                   });
 
                   dispatch(deleteBoard(board.id));
@@ -358,7 +358,7 @@ const BoardDetail = () => {
                       onNameUpdated={(newListName) => {
                         if (!newListName) return;
 
-                        dispatch(updateList(list.id, { name: newListName }));
+                        dispatch(updateGroup(list.id, { name: newListName }));
                         send("IDLE");
                       }}
                       onClickName={() =>
@@ -377,7 +377,7 @@ const BoardDetail = () => {
                           dispatch(deleteCard(card.id));
                         });
 
-                        dispatch(deleteList(list.id));
+                        dispatch(deleteGroup(list.id));
                       }}
                       onClickAdd={() =>
                         send("CREATE_CARD", { listId: list.id })
@@ -434,7 +434,7 @@ const BoardDetail = () => {
                     onClickApplyAdd={(listName) => {
                       if (!listName) return;
 
-                      const action = createList({
+                      const action = createGroup({
                         boardId: board.id,
                         name: listName,
                       });

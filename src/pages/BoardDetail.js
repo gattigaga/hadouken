@@ -10,11 +10,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import chroma from "chroma-js";
 
-import Group from "../components/Group";
-import Card from "../components/Card";
-import Button from "../components/Button";
-import CreateGroupButton from "../components/CreateGroupButton";
-import CreateGroupForm from "../components/CreateGroupForm";
+import Button from "../components/common/Button";
+import Group from "../components/board-detail/Group";
+import Card from "../components/board-detail/Card";
+import CreateGroupButton from "../components/board-detail/CreateGroupButton";
+import CreateGroupForm from "../components/board-detail/CreateGroupForm";
 import {
   createList,
   deleteList,

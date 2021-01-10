@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import autosize from "autosize";
 
-import Button from "./Button";
+import Button from "../common/Button";
 
 const Container = styled.div`
   width: 280px;

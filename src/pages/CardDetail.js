@@ -15,9 +15,9 @@ import {
 import { Machine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 
-import Button from "../components/Button";
-import Check from "../components/Check";
-import Progress from "../components/Progress";
+import Button from "../components/common/Button";
+import Check from "../components/card-detail/Check";
+import Progress from "../components/card-detail/Progress";
 import {
   updateCard,
   createCheck,

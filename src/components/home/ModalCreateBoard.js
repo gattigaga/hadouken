@@ -6,7 +6,7 @@ import chroma from "chroma-js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import Button from "./Button";
+import Button from "../common/Button";
 
 const Board = styled.div`
   width: 320px;

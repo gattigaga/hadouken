@@ -5,7 +5,7 @@ import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import Button from "./Button";
+import Button from "../common/Button";
 
 const Container = styled.div`
   width: 100%;

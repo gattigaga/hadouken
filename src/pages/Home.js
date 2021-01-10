@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
 
-import Board from "../components/Board";
-import CreateBoardButton from "../components/CreateBoardButton";
-import ModalCreateBoard from "../components/ModalCreateBoard";
+import Board from "../components/home/Board";
+import CreateBoardButton from "../components/home/CreateBoardButton";
+import ModalCreateBoard from "../components/home/ModalCreateBoard";
 import { createBoard } from "../store/actionCreators";
 
 const Container = styled.div`

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
 
-import Button from "./Button";
+import Button from "../common/Button";
 
 const Container = styled.div`
   width: 280px;

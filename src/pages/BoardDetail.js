@@ -13,7 +13,8 @@ import chroma from "chroma-js";
 import List from "../components/List";
 import Card from "../components/Card";
 import Button from "../components/Button";
-import CreateList from "../components/CreateList";
+import CreateGroupButton from "../components/CreateGroupButton";
+import CreateGroupForm from "../components/CreateGroupForm";
 import {
   createList,
   deleteList,
@@ -24,7 +25,7 @@ import {
   moveCard,
   moveList,
   deleteCard,
-  deleteCheck
+  deleteCheck,
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -115,16 +116,16 @@ const machine = Machine({
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
+            listId: (_, event) => event.listId,
+          }),
         },
         UPDATE_LIST_NAME: {
           target: "updateListName",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
-        }
-      }
+            listId: (_, event) => event.listId,
+          }),
+        },
+      },
     },
     createList: {
       on: {
@@ -133,16 +134,16 @@ const machine = Machine({
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
+            listId: (_, event) => event.listId,
+          }),
         },
         UPDATE_LIST_NAME: {
           target: "updateListName",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
-        }
-      }
+            listId: (_, event) => event.listId,
+          }),
+        },
+      },
     },
     createCard: {
       on: {
@@ -152,16 +153,16 @@ const machine = Machine({
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
+            listId: (_, event) => event.listId,
+          }),
         },
         UPDATE_LIST_NAME: {
           target: "updateListName",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
-        }
-      }
+            listId: (_, event) => event.listId,
+          }),
+        },
+      },
     },
     updateListName: {
       on: {
@@ -171,16 +172,16 @@ const machine = Machine({
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
+            listId: (_, event) => event.listId,
+          }),
         },
         UPDATE_LIST_NAME: {
           target: "updateListName",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
-        }
-      }
+            listId: (_, event) => event.listId,
+          }),
+        },
+      },
     },
     updateBoardName: {
       on: {
@@ -189,25 +190,25 @@ const machine = Machine({
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
+            listId: (_, event) => event.listId,
+          }),
         },
         UPDATE_LIST_NAME: {
           target: "updateListName",
           actions: assign({
-            listId: (_, event) => event.listId
-          })
-        }
-      }
-    }
-  }
+            listId: (_, event) => event.listId,
+          }),
+        },
+      },
+    },
+  },
 });
 
 const BoardDetail = () => {
-  const boards = useSelector(state => state.boards);
-  const lists = useSelector(state => state.lists);
-  const cards = useSelector(state => state.cards);
-  const checks = useSelector(state => state.checks);
+  const boards = useSelector((state) => state.boards);
+  const lists = useSelector((state) => state.lists);
+  const cards = useSelector((state) => state.cards);
+  const checks = useSelector((state) => state.checks);
   const dispatch = useDispatch();
   const history = useHistory();
   const { boardSlug } = useParams();
@@ -215,10 +216,10 @@ const BoardDetail = () => {
   const refInputName = useRef(null);
 
   const isUpdateBoardName = current.matches("updateBoardName");
-  const board = boards.find(board => board.slug === boardSlug);
+  const board = boards.find((board) => board.slug === boardSlug);
 
   const currentLists = lists
-    .filter(list => list.boardId === board.id)
+    .filter((list) => list.boardId === board.id)
     .sort((a, b) => a.index - b.index);
 
   const [newBoardName, setNewBoardName] = useState("");
@@ -233,7 +234,7 @@ const BoardDetail = () => {
     }
   }, [isUpdateBoardName]);
 
-  const reorder = result => {
+  const reorder = (result) => {
     const { type, source, destination, draggableId } = result;
 
     if (!destination) return;
@@ -246,14 +247,14 @@ const BoardDetail = () => {
     if (type === "LIST") {
       dispatch(
         moveList(draggableId, {
-          index: destination.index
+          index: destination.index,
         })
       );
     } else {
       dispatch(
         moveCard(draggableId, {
           listId: isSameList ? undefined : destination.droppableId,
-          index: destination.index
+          index: destination.index,
         })
       );
     }
@@ -272,10 +273,10 @@ const BoardDetail = () => {
             ref={refInputName}
             type="text"
             value={newBoardName}
-            onClick={event => event.stopPropagation()}
-            onChange={event => setNewBoardName(event.target.value)}
+            onClick={(event) => event.stopPropagation()}
+            onChange={(event) => setNewBoardName(event.target.value)}
             onBlur={() => dispatch(updateBoard(board.id, newBoardName))}
-            onKeyDown={event => {
+            onKeyDown={(event) => {
               switch (event.keyCode) {
                 case 13: // Enter is pressed
                 case 27: // Escape is pressed
@@ -292,13 +293,13 @@ const BoardDetail = () => {
           <Header>
             <Icon
               icon={faChevronLeft}
-              onClick={event => {
+              onClick={(event) => {
                 event.stopPropagation();
                 history.goBack();
               }}
             />
             <Title
-              onClick={event => {
+              onClick={(event) => {
                 event.stopPropagation();
                 send("UPDATE_BOARD_NAME");
               }}
@@ -308,21 +309,21 @@ const BoardDetail = () => {
             <Button
               label="Delete"
               color="#5cb5fa"
-              onClick={event => {
+              onClick={(event) => {
                 event.stopPropagation();
                 history.goBack();
                 setTimeout(() => {
-                  currentLists.forEach(list => {
+                  currentLists.forEach((list) => {
                     const currentCards = cards
-                      .filter(card => card.listId === list.id)
+                      .filter((card) => card.listId === list.id)
                       .sort((a, b) => a.index - b.index);
 
-                    currentCards.forEach(card => {
+                    currentCards.forEach((card) => {
                       const currentChecks = checks.filter(
-                        check => check.cardId === card.id
+                        (check) => check.cardId === card.id
                       );
 
-                      currentChecks.forEach(check => {
+                      currentChecks.forEach((check) => {
                         dispatch(deleteCheck(check.id));
                       });
 
@@ -344,11 +345,11 @@ const BoardDetail = () => {
             direction="horizontal"
             type="LIST"
           >
-            {provided => (
+            {(provided) => (
               <ListWrapper ref={provided.innerRef} {...provided.droppableProps}>
-                {currentLists.map(list => {
+                {currentLists.map((list) => {
                   const currentCards = cards
-                    .filter(card => card.listId === list.id)
+                    .filter((card) => card.listId === list.id)
                     .sort((a, b) => a.index - b.index);
 
                   return (
@@ -357,7 +358,7 @@ const BoardDetail = () => {
                       id={list.id}
                       index={list.index}
                       name={list.name}
-                      onNameUpdated={newListName => {
+                      onNameUpdated={(newListName) => {
                         if (!newListName) return;
 
                         dispatch(updateList(list.id, { name: newListName }));
@@ -367,12 +368,12 @@ const BoardDetail = () => {
                         send("UPDATE_LIST_NAME", { listId: list.id })
                       }
                       onClickClose={() => {
-                        currentCards.forEach(card => {
+                        currentCards.forEach((card) => {
                           const currentChecks = checks.filter(
-                            check => check.cardId === card.id
+                            (check) => check.cardId === card.id
                           );
 
-                          currentChecks.forEach(check => {
+                          currentChecks.forEach((check) => {
                             dispatch(deleteCheck(check.id));
                           });
 
@@ -384,12 +385,12 @@ const BoardDetail = () => {
                       onClickAdd={() =>
                         send("CREATE_CARD", { listId: list.id })
                       }
-                      onClickApplyAdd={cardName => {
+                      onClickApplyAdd={(cardName) => {
                         if (!cardName) return;
 
                         const action = createCard({
                           listId: list.id,
-                          name: cardName
+                          name: cardName,
                         });
 
                         dispatch(action);
@@ -404,13 +405,13 @@ const BoardDetail = () => {
                         current.context.listId === list.id
                       }
                     >
-                      {currentCards.map(card => {
+                      {currentCards.map((card) => {
                         const currentChecks = checks.filter(
-                          check => check.cardId === card.id
+                          (check) => check.cardId === card.id
                         );
 
                         const totalChecked = currentChecks.filter(
-                          check => !!check.isChecked
+                          (check) => !!check.isChecked
                         ).length;
 
                         return (
@@ -431,22 +432,24 @@ const BoardDetail = () => {
                   );
                 })}
                 {provided.placeholder}
-                <CreateList
-                  onClickAdd={() => send("CREATE_LIST")}
-                  onClickApplyAdd={listName => {
-                    if (!listName) return;
+                {current.matches("createList") ? (
+                  <CreateGroupForm
+                    onClickApplyAdd={(listName) => {
+                      if (!listName) return;
 
-                    const action = createList({
-                      boardId: board.id,
-                      name: listName
-                    });
+                      const action = createList({
+                        boardId: board.id,
+                        name: listName,
+                      });
 
-                    dispatch(action);
-                    send("IDLE");
-                  }}
-                  onClickCancelAdd={() => send("IDLE")}
-                  isWillAdd={current.matches("createList")}
-                />
+                      dispatch(action);
+                      send("IDLE");
+                    }}
+                    onClickCancelAdd={() => send("IDLE")}
+                  />
+                ) : (
+                  <CreateGroupButton onClick={() => send("CREATE_LIST")} />
+                )}
               </ListWrapper>
             )}
           </Droppable>

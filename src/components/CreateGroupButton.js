@@ -36,18 +36,18 @@ const Label = styled.p`
 
 const CreateGroupButton = ({ onClick }) => (
   <Container
-    onClick={(event) => {
+    onClick={event => {
       event.stopPropagation();
       onClick();
     }}
   >
     <FontAwesomeIcon icon={faPlus} size={14} />
-    <Label>Add new list</Label>
+    <Label>Add new group</Label>
   </Container>
 );
 
 CreateGroupButton.propTypes = {
-  onClick: PropTypes.func,
+  onClick: PropTypes.func
 };
 
 export default CreateGroupButton;

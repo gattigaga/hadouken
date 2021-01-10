@@ -2,41 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "./Button";
 
-const Container = styled.button`
-  width: 280px;
-  height: 40px;
-  flex-shrink: 0;
-  color: white;
-  display: flex;
-  align-items: center;
-  border: 0px;
-  border-radius: 4px;
-  padding: 0px 16px;
-  cursor: pointer;
-  background: ${chroma("#3498db")
-    .brighten(0.5)
-    .hex()};
-
-  &:hover {
-    background: ${chroma("#3498db")
-      .brighten(0.6)
-      .hex()};
-  }
-`;
-
-const Label = styled.p`
-  font-size: 14px;
-  font-family: "Roboto";
-  margin: 0px;
-  margin-left: 8px;
-`;
-
-const List = styled.div`
+const Container = styled.div`
   width: 280px;
   flex-shrink: 0;
   background: #eee;
@@ -76,30 +45,22 @@ const Input = styled.input`
       .hex()};
 `;
 
-const CreateList = ({
-  isWillAdd,
-  onClickAdd,
-  onClickApplyAdd,
-  onClickCancelAdd
-}) => {
+const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
   const [name, setName] = useState("");
   const refInput = useRef(null);
 
   useEffect(() => {
     setName("");
+    refInput.current.focus();
+  }, []);
 
-    if (isWillAdd) {
-      refInput.current.focus();
-    }
-  }, [isWillAdd]);
-
-  return isWillAdd ? (
-    <List>
+  return (
+    <Container>
       <Header>
         <Input
           ref={refInput}
           type="text"
-          placeholder="Enter list name..."
+          placeholder="Enter group name..."
           value={name}
           onClick={event => event.stopPropagation()}
           onChange={event => setName(event.target.value)}
@@ -136,25 +97,13 @@ const CreateList = ({
           }}
         />
       </Footer>
-    </List>
-  ) : (
-    <Container
-      onClick={event => {
-        event.stopPropagation();
-        onClickAdd();
-      }}
-    >
-      <FontAwesomeIcon icon={faPlus} size={14} />
-      <Label>Add new list</Label>
     </Container>
   );
 };
 
-CreateList.propTypes = {
-  isWillAdd: PropTypes.bool,
-  onClickAdd: PropTypes.func,
+CreateGroupForm.propTypes = {
   onClickApplyAdd: PropTypes.func,
   onClickCancelAdd: PropTypes.func
 };
 
-export default CreateList;
+export default CreateGroupForm;

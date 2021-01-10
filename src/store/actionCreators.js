@@ -4,9 +4,9 @@ import {
   CREATE_BOARD,
   UPDATE_BOARD,
   DELETE_BOARD,
-  CREATE_LIST,
-  UPDATE_LIST,
-  DELETE_LIST,
+  CREATE_GROUP,
+  UPDATE_GROUP,
+  DELETE_GROUP,
   CREATE_CARD,
   UPDATE_CARD,
   DELETE_CARD,
@@ -14,11 +14,18 @@ import {
   CREATE_CHECK,
   UPDATE_CHECK,
   MOVE_CARD,
-  MOVE_LIST,
+  MOVE_GROUP,
   MOVE_CHECK
 } from "./actions";
 
-export const createBoard = name => {
+/**
+ * Create action for create board.
+ *
+ * @param {Object} data Data
+ * @param {String} data.name Board name
+ * @return {Object} Action
+ */
+export const createBoard = ({ name }) => {
   const id = uuid();
   const slug = name.toLowerCase().replace(" ", "-") + `-${id}`;
   const timestamp = Date.now();
@@ -34,22 +41,49 @@ export const createBoard = name => {
   };
 };
 
-export const updateBoard = (id, name) => ({
+/**
+ * Create action for update board.
+ *
+ * @param {String} id Board ID
+ * @param {Object} data Data
+ * @param {String} data.name New board name
+ * @return {Object} Action
+ */
+export const updateBoard = (id, { name }) => ({
   type: UPDATE_BOARD,
-  payload: { id, name }
+  payload: {
+    id,
+    data: {
+      name
+    }
+  }
 });
 
+/**
+ * Create action for delete board.
+ *
+ * @param {String} id Board ID
+ * @return {Object} Action
+ */
 export const deleteBoard = id => ({
   type: DELETE_BOARD,
   payload: id
 });
 
-export const createList = ({ boardId, name }) => {
+/**
+ * Create action for create group.
+ *
+ * @param {Object} data Data
+ * @param {String} data.boardId Board ID
+ * @param {String} data.name Group name
+ * @return {Object} Action
+ */
+export const createGroup = ({ boardId, name }) => {
   const id = uuid();
   const timestamp = Date.now();
 
   return {
-    type: CREATE_LIST,
+    type: CREATE_GROUP,
     payload: {
       id,
       boardId,
@@ -59,44 +93,62 @@ export const createList = ({ boardId, name }) => {
   };
 };
 
-export const updateList = (id, data) => {
-  const validData = {};
-  const dataKeys = ["name"];
+/**
+ * Create action for update group.
+ *
+ * @param {String} id Group ID
+ * @param {Object} data Data
+ * @param {String} data.name New group name
+ * @return {Object} Action
+ */
+export const updateGroup = (id, { name }) => ({
+  type: UPDATE_GROUP,
+  payload: {
+    id,
+    data: {
+      name
+    }
+  }
+});
 
-  dataKeys.forEach(key => {
-    if (data[key] === undefined) return;
+/**
+ * Create action for move group.
+ *
+ * @param {String} id Group ID
+ * @param {Object} data Data
+ * @param {String} data.index New group index
+ * @return {Object} Action
+ */
+export const moveGroup = (id, { index }) => ({
+  type: MOVE_GROUP,
+  payload: {
+    id,
+    data: {
+      index
+    }
+  }
+});
 
-    validData[key] = data[key];
-  });
-
-  return {
-    type: UPDATE_LIST,
-    payload: { id, data: validData }
-  };
-};
-
-export const moveList = (id, data) => {
-  const validData = {};
-  const dataKeys = ["index"];
-
-  dataKeys.forEach(key => {
-    if (data[key] === undefined) return;
-
-    validData[key] = data[key];
-  });
-
-  return {
-    type: MOVE_LIST,
-    payload: { id, data: validData }
-  };
-};
-
-export const deleteList = id => ({
-  type: DELETE_LIST,
+/**
+ * Create action for delete group.
+ *
+ * @param {String} id Group ID
+ * @return {Object} Action
+ */
+export const deleteGroup = id => ({
+  type: DELETE_GROUP,
   payload: id
 });
 
-export const createCard = ({ listId, name }) => {
+/**
+ * Create action for create card.
+ *
+ * @param {Object} data Data
+ * @param {String} data.groupId Group ID
+ * @param {String} data.name Card name
+ * @return {Object} Action
+ */
+export const createCard = ({ groupId, name }) => {
   const id = uuid();
   const slug = name.toLowerCase().replace(" ", "-") + `-${id}`;
   const timestamp = Date.now();
@@ -106,7 +158,7 @@ export const createCard = ({ listId, name }) => {
     type: CREATE_CARD,
     payload: {
       id,
-      listId,
+      groupId,
       slug,
       name,
       description,
@@ -115,43 +167,65 @@ export const createCard = ({ listId, name }) => {
   };
 };
 
-export const updateCard = (id, data) => {
-  const validData = {};
-  const dataKeys = ["name", "description"];
+/**
+ * Create action for update card.
+ *
+ * @param {String} id Card ID
+ * @param {Object} data Data
+ * @param {String} data.name New card name
+ * @param {String} data.description New card description
+ * @return {Object} Action
+ */
+export const updateCard = (id, { name, description }) => ({
+  type: UPDATE_CARD,
+  payload: {
+    id,
+    data: {
+      name,
+      description
+    }
+  }
+});
 
-  dataKeys.forEach(key => {
-    if (data[key] === undefined) return;
+/**
+ * Create action for move card.
+ *
+ * @param {String} id Card ID
+ * @param {Object} data Data
+ * @param {String} data.groupId New group ID
+ * @param {String} data.index New card index
+ * @return {Object} Action
+ */
+export const moveCard = (id, { groupId, index }) => ({
+  type: MOVE_CARD,
+  payload: {
+    id,
+    data: {
+      groupId,
+      index
+    }
+  }
+});
 
-    validData[key] = data[key];
-  });
-
-  return {
-    type: UPDATE_CARD,
-    payload: { id, data: validData }
-  };
-};
-
-export const moveCard = (id, data) => {
-  const validData = {};
-  const dataKeys = ["listId", "index"];
-
-  dataKeys.forEach(key => {
-    if (data[key] === undefined) return;
-
-    validData[key] = data[key];
-  });
-
-  return {
-    type: MOVE_CARD,
-    payload: { id, data: validData }
-  };
-};
-
+/**
+ * Create action for delete card.
+ *
+ * @param {String} id Card ID
+ * @return {Object} Action
+ */
 export const deleteCard = id => ({
   type: DELETE_CARD,
   payload: id
 });
 
+/**
+ * Create action for create check.
+ *
+ * @param {Object} data Data
+ * @param {String} data.cardId Card ID
+ * @param {String} data.label Check label
+ * @return {Object} Action
+ */
 export const createCheck = ({ cardId, label }) => {
   const id = uuid();
   const timestamp = Date.now();
@@ -169,38 +243,50 @@ export const createCheck = ({ cardId, label }) => {
   };
 };
 
-export const updateCheck = (id, data) => {
-  const validData = {};
-  const dataKeys = ["label", "isChecked"];
+/**
+ * Create action for update check.
+ *
+ * @param {String} id Check ID
+ * @param {Object} data Data
+ * @param {String} data.label New check label
+ * @param {String} data.isChecked Is this checked or not ?
+ * @return {Object} Action
+ */
+export const updateCheck = (id, { label, isChecked }) => ({
+  type: UPDATE_CHECK,
+  payload: {
+    id,
+    data: {
+      label,
+      isChecked
+    }
+  }
+});
 
-  dataKeys.forEach(key => {
-    if (data[key] === undefined) return;
+/**
+ * Create action for move check.
+ *
+ * @param {String} id Check ID
+ * @param {Object} data Data
+ * @param {String} data.index New check index
+ * @return {Object} Action
+ */
+export const moveCheck = (id, { index }) => ({
+  type: MOVE_CHECK,
+  payload: {
+    id,
+    data: {
+      index
+    }
+  }
+});
 
-    validData[key] = data[key];
-  });
-
-  return {
-    type: UPDATE_CHECK,
-    payload: { id, data: validData }
-  };
-};
-
-export const moveCheck = (id, data) => {
-  const validData = {};
-  const dataKeys = ["index"];
-
-  dataKeys.forEach(key => {
-    if (data[key] === undefined) return;
-
-    validData[key] = data[key];
-  });
-
-  return {
-    type: MOVE_CHECK,
-    payload: { id, data: validData }
-  };
-};
-
+/**
+ * Create action for delete check.
+ *
+ * @param {String} id Check ID
+ * @return {Object} Action
+ */
 export const deleteCheck = id => ({
   type: DELETE_CHECK,
   payload: id

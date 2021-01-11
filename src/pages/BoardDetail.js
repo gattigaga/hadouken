@@ -3,10 +3,9 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
-import { Machine, assign } from "xstate";
+import { Machine } from "xstate";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useMachine } from "@xstate/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import chroma from "chroma-js";
 
 import Header from "../components/board-detail/Header";
@@ -40,30 +39,6 @@ const Wrapper = styled.div`
   padding-top: 48px;
 `;
 
-const Title = styled.h1`
-  font-family: "Roboto";
-  font-size: 32px;
-  letter-spacing: -1px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-right: 24px;
-  color: white;
-`;
-
-const Input = styled.input`
-  width: 320px;
-  height: 42px;
-  font-family: "Roboto";
-  font-size: 24px;
-  outline: none;
-  padding: 0px 8px;
-  margin-right: 24px;
-  margin-bottom: 24px;
-  box-sizing: border-box;
-  border-radius: 4px;
-  border: 0px;
-`;
-
 const GroupWrapper = styled.div`
   display: flex;
   align-items: flex-start;
@@ -85,51 +60,24 @@ const GroupWrapper = styled.div`
   }
 `;
 
-const Icon = styled(FontAwesomeIcon)`
-  font-size: 32px;
-  margin-right: 32px;
-  cursor: pointer;
-  color: ${chroma("#3498db").brighten(0.5).hex()};
-`;
-
 const machine = Machine({
-  id: "machine",
+  id: "boardDetail",
   initial: "idle",
   states: {
     idle: {
       on: {
         CREATE_GROUP: "createGroup",
         UPDATE_BOARD_NAME: "updateBoardName",
-        CREATE_CARD: {
-          target: "createCard",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
-        UPDATE_GROUP_NAME: {
-          target: "updateGroupName",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
+        CREATE_CARD: "createCard",
+        UPDATE_GROUP_NAME: "updateGroupName",
       },
     },
     createGroup: {
       on: {
         IDLE: "idle",
         UPDATE_BOARD_NAME: "updateBoardName",
-        CREATE_CARD: {
-          target: "createCard",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
-        UPDATE_GROUP_NAME: {
-          target: "updateGroupName",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
+        CREATE_CARD: "createCard",
+        UPDATE_GROUP_NAME: "updateGroupName",
       },
     },
     createCard: {
@@ -137,18 +85,8 @@ const machine = Machine({
         IDLE: "idle",
         CREATE_GROUP: "createGroup",
         UPDATE_BOARD_NAME: "updateBoardName",
-        CREATE_CARD: {
-          target: "createCard",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
-        UPDATE_GROUP_NAME: {
-          target: "updateGroupName",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
+        CREATE_CARD: "createCard",
+        UPDATE_GROUP_NAME: "updateGroupName",
       },
     },
     updateGroupName: {
@@ -156,36 +94,16 @@ const machine = Machine({
         IDLE: "idle",
         CREATE_GROUP: "createGroup",
         UPDATE_BOARD_NAME: "updateBoardName",
-        CREATE_CARD: {
-          target: "createCard",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
-        UPDATE_GROUP_NAME: {
-          target: "updateGroupName",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
+        CREATE_CARD: "createCard",
+        UPDATE_GROUP_NAME: "updateGroupName",
       },
     },
     updateBoardName: {
       on: {
         IDLE: "idle",
         CREATE_GROUP: "createGroup",
-        CREATE_CARD: {
-          target: "createCard",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
-        UPDATE_GROUP_NAME: {
-          target: "updateGroupName",
-          actions: assign({
-            groupId: (_, event) => event.groupId,
-          }),
-        },
+        CREATE_CARD: "createCard",
+        UPDATE_GROUP_NAME: "updateGroupName",
       },
     },
   },
@@ -194,6 +112,7 @@ const machine = Machine({
 const BoardDetail = () => {
   const [current, send] = useMachine(machine);
   const [newBoardName, setNewBoardName] = useState("");
+  const [groupId, setGroupId] = useState(null);
   const { boardSlug } = useParams();
 
   // Get current board
@@ -341,9 +260,10 @@ const BoardDetail = () => {
                         dispatch(updateGroup(group.id, { name: newGroupName }));
                         send("IDLE");
                       }}
-                      onClickName={() =>
-                        send("UPDATE_GROUP_NAME", { groupId: group.id })
-                      }
+                      onClickName={() => {
+                        send("UPDATE_GROUP_NAME");
+                        setGroupId(group.id);
+                      }}
                       onClickClose={() => {
                         currentCards.forEach((card) => {
                           const currentChecks = checks.filter(
@@ -359,9 +279,10 @@ const BoardDetail = () => {
 
                         dispatch(deleteGroup(group.id));
                       }}
-                      onClickAdd={() =>
-                        send("CREATE_CARD", { groupId: group.id })
-                      }
+                      onClickAdd={() => {
+                        send("CREATE_CARD");
+                        setGroupId(group.id);
+                      }}
                       onClickApplyAdd={(cardName) => {
                         if (!cardName) return;
 
@@ -374,12 +295,11 @@ const BoardDetail = () => {
                       }}
                       onClickCancelAdd={() => send("IDLE")}
                       isWillAdd={
-                        current.matches("createCard") &&
-                        current.context.groupId === group.id
+                        current.matches("createCard") && groupId === group.id
                       }
                       isWillUpdateName={
                         current.matches("updateGroupName") &&
-                        current.context.groupId === group.id
+                        groupId === group.id
                       }
                     >
                       {currentCards.map((card) => {

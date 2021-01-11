@@ -7,10 +7,9 @@ import { Machine, assign } from "xstate";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useMachine } from "@xstate/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import chroma from "chroma-js";
 
-import Button from "../components/common/Button";
+import Header from "../components/board-detail/Header";
 import Group from "../components/board-detail/Group";
 import Card from "../components/board-detail/Card";
 import CreateGroupButton from "../components/board-detail/CreateGroupButton";
@@ -86,12 +85,6 @@ const GroupWrapper = styled.div`
   }
 `;
 
-const Header = styled.header`
-  display: flex;
-  margin-bottom: 24px;
-  align-items: center;
-`;
-
 const Icon = styled(FontAwesomeIcon)`
   font-size: 32px;
   margin-right: 32px;
@@ -105,36 +98,36 @@ const machine = Machine({
   states: {
     idle: {
       on: {
-        CREATE_LIST: "createList",
+        CREATE_GROUP: "createGroup",
         UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
-        UPDATE_LIST_NAME: {
-          target: "updateListName",
+        UPDATE_GROUP_NAME: {
+          target: "updateGroupName",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
       },
     },
-    createList: {
+    createGroup: {
       on: {
         IDLE: "idle",
         UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
-        UPDATE_LIST_NAME: {
-          target: "updateListName",
+        UPDATE_GROUP_NAME: {
+          target: "updateGroupName",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
       },
@@ -142,37 +135,37 @@ const machine = Machine({
     createCard: {
       on: {
         IDLE: "idle",
-        CREATE_LIST: "createList",
+        CREATE_GROUP: "createGroup",
         UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
-        UPDATE_LIST_NAME: {
-          target: "updateListName",
+        UPDATE_GROUP_NAME: {
+          target: "updateGroupName",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
       },
     },
-    updateListName: {
+    updateGroupName: {
       on: {
         IDLE: "idle",
-        CREATE_LIST: "createList",
+        CREATE_GROUP: "createGroup",
         UPDATE_BOARD_NAME: "updateBoardName",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
-        UPDATE_LIST_NAME: {
-          target: "updateListName",
+        UPDATE_GROUP_NAME: {
+          target: "updateGroupName",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
       },
@@ -180,17 +173,17 @@ const machine = Machine({
     updateBoardName: {
       on: {
         IDLE: "idle",
-        CREATE_LIST: "createList",
+        CREATE_GROUP: "createGroup",
         CREATE_CARD: {
           target: "createCard",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
-        UPDATE_LIST_NAME: {
-          target: "updateListName",
+        UPDATE_GROUP_NAME: {
+          target: "updateGroupName",
           actions: assign({
-            listId: (_, event) => event.listId,
+            groupId: (_, event) => event.groupId,
           }),
         },
       },
@@ -199,24 +192,84 @@ const machine = Machine({
 });
 
 const BoardDetail = () => {
-  const boards = useSelector((state) => state.boards);
-  const groups = useSelector((state) => state.groups);
+  const [current, send] = useMachine(machine);
+  const [newBoardName, setNewBoardName] = useState("");
+  const { boardSlug } = useParams();
+
+  // Get current board
+  const board = useSelector((state) =>
+    state.boards.find((board) => board.slug === boardSlug)
+  );
+
+  // Get current board's groups
+  const groups = useSelector((state) =>
+    state.groups
+      .filter((group) => group.boardId === board.id)
+      .sort((a, b) => a.index - b.index)
+  );
+
   const cards = useSelector((state) => state.cards);
   const checks = useSelector((state) => state.checks);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { boardSlug } = useParams();
-  const [current, send] = useMachine(machine);
   const refInputName = useRef(null);
 
   const isUpdateBoardName = current.matches("updateBoardName");
-  const board = boards.find((board) => board.slug === boardSlug);
 
-  const currentLists = groups
-    .filter((list) => list.boardId === board.id)
-    .sort((a, b) => a.index - b.index);
+  const removeBoard = (event) => {
+    event.stopPropagation();
+    history.goBack();
 
-  const [newBoardName, setNewBoardName] = useState("");
+    setTimeout(() => {
+      groups.forEach((group) => {
+        const currentCards = cards
+          .filter((card) => card.groupId === group.id)
+          .sort((a, b) => a.index - b.index);
+
+        currentCards.forEach((card) => {
+          const currentChecks = checks.filter(
+            (check) => check.cardId === card.id
+          );
+
+          currentChecks.forEach((check) => {
+            dispatch(deleteCheck(check.id));
+          });
+
+          dispatch(deleteCard(card.id));
+        });
+
+        dispatch(deleteGroup(group.id));
+      });
+
+      dispatch(deleteBoard(board.id));
+    }, 50);
+  };
+
+  const reorderGroup = (result) => {
+    const { type, source, destination, draggableId } = result;
+
+    if (!destination) return;
+
+    const isSameGroup = destination.droppableId === source.droppableId;
+    const isSameIndex = destination.index === source.index;
+
+    if (isSameGroup && isSameIndex) return;
+
+    if (type === "GROUP") {
+      dispatch(
+        moveGroup(draggableId, {
+          index: destination.index,
+        })
+      );
+    } else {
+      dispatch(
+        moveCard(draggableId, {
+          groupId: isSameGroup ? undefined : destination.droppableId,
+          index: destination.index,
+        })
+      );
+    }
+  };
 
   useEffect(() => {
     setNewBoardName(board ? board.name : "");
@@ -228,32 +281,6 @@ const BoardDetail = () => {
     }
   }, [isUpdateBoardName]);
 
-  const reorder = (result) => {
-    const { type, source, destination, draggableId } = result;
-
-    if (!destination) return;
-
-    const isSameList = destination.droppableId === source.droppableId;
-    const isSameIndex = destination.index === source.index;
-
-    if (isSameList && isSameIndex) return;
-
-    if (type === "LIST") {
-      dispatch(
-        moveGroup(draggableId, {
-          index: destination.index,
-        })
-      );
-    } else {
-      dispatch(
-        moveCard(draggableId, {
-          listId: isSameList ? undefined : destination.droppableId,
-          index: destination.index,
-        })
-      );
-    }
-  };
-
   if (!board) return null;
 
   return (
@@ -262,107 +289,60 @@ const BoardDetail = () => {
         <title>Hadouken | {board.name}</title>
       </Helmet>
       <Wrapper>
-        {current.matches("updateBoardName") ? (
-          <Input
-            ref={refInputName}
-            type="text"
-            value={newBoardName}
-            onClick={(event) => event.stopPropagation()}
-            onChange={(event) => setNewBoardName(event.target.value)}
-            onBlur={() => dispatch(updateBoard(board.id, newBoardName))}
-            onKeyDown={(event) => {
-              switch (event.keyCode) {
-                case 13: // Enter is pressed
-                case 27: // Escape is pressed
-                  dispatch(updateBoard(board.id, newBoardName));
-                  send("IDLE");
-                  break;
+        <Header
+          refInput={refInputName}
+          title={newBoardName}
+          isEdit={current.matches("updateBoardName")}
+          onChangeTitle={(event) => setNewBoardName(event.target.value)}
+          onApplyTitle={() => {
+            dispatch(
+              updateBoard(board.id, {
+                name: newBoardName,
+              })
+            );
 
-                default:
-                  break;
-              }
-            }}
-          />
-        ) : (
-          <Header>
-            <Icon
-              icon={faChevronLeft}
-              onClick={(event) => {
-                event.stopPropagation();
-                history.goBack();
-              }}
-            />
-            <Title
-              onClick={(event) => {
-                event.stopPropagation();
-                send("UPDATE_BOARD_NAME");
-              }}
-            >
-              {board.name}
-            </Title>
-            <Button
-              label="Delete"
-              color="#5cb5fa"
-              onClick={(event) => {
-                event.stopPropagation();
-                history.goBack();
-                setTimeout(() => {
-                  currentLists.forEach((list) => {
-                    const currentCards = cards
-                      .filter((card) => card.listId === list.id)
-                      .sort((a, b) => a.index - b.index);
-
-                    currentCards.forEach((card) => {
-                      const currentChecks = checks.filter(
-                        (check) => check.cardId === card.id
-                      );
-
-                      currentChecks.forEach((check) => {
-                        dispatch(deleteCheck(check.id));
-                      });
-
-                      dispatch(deleteCard(card.id));
-                    });
-
-                    dispatch(deleteGroup(list.id));
-                  });
-
-                  dispatch(deleteBoard(board.id));
-                }, 50);
-              }}
-            />
-          </Header>
-        )}
-        <DragDropContext onDragEnd={reorder}>
+            send("IDLE");
+          }}
+          onClickBack={(event) => {
+            event.stopPropagation();
+            history.goBack();
+          }}
+          onClickTitle={(event) => {
+            event.stopPropagation();
+            send("UPDATE_BOARD_NAME");
+          }}
+          onClickDelete={removeBoard}
+        />
+        <DragDropContext onDragEnd={reorderGroup}>
           <Droppable
             droppableId="droppable-root"
             direction="horizontal"
-            type="LIST"
+            type="GROUP"
           >
             {(provided) => (
               <GroupWrapper
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {currentLists.map((list) => {
+                {groups.map((group) => {
                   const currentCards = cards
-                    .filter((card) => card.listId === list.id)
+                    .filter((card) => card.groupId === group.id)
                     .sort((a, b) => a.index - b.index);
 
                   return (
                     <Group
-                      key={list.id}
-                      id={list.id}
-                      index={list.index}
-                      name={list.name}
-                      onNameUpdated={(newListName) => {
-                        if (!newListName) return;
+                      key={group.id}
+                      id={group.id}
+                      index={group.index}
+                      name={group.name}
+                      onNameUpdated={(newGroupName) => {
+                        if (!newGroupName) return;
 
-                        dispatch(updateGroup(list.id, { name: newListName }));
+                        dispatch(updateGroup(group.id, { name: newGroupName }));
                         send("IDLE");
                       }}
                       onClickName={() =>
-                        send("UPDATE_LIST_NAME", { listId: list.id })
+                        send("UPDATE_GROUP_NAME", { groupId: group.id })
                       }
                       onClickClose={() => {
                         currentCards.forEach((card) => {
@@ -377,16 +357,16 @@ const BoardDetail = () => {
                           dispatch(deleteCard(card.id));
                         });
 
-                        dispatch(deleteGroup(list.id));
+                        dispatch(deleteGroup(group.id));
                       }}
                       onClickAdd={() =>
-                        send("CREATE_CARD", { listId: list.id })
+                        send("CREATE_CARD", { groupId: group.id })
                       }
                       onClickApplyAdd={(cardName) => {
                         if (!cardName) return;
 
                         const action = createCard({
-                          listId: list.id,
+                          groupId: group.id,
                           name: cardName,
                         });
 
@@ -395,11 +375,11 @@ const BoardDetail = () => {
                       onClickCancelAdd={() => send("IDLE")}
                       isWillAdd={
                         current.matches("createCard") &&
-                        current.context.listId === list.id
+                        current.context.groupId === group.id
                       }
                       isWillUpdateName={
-                        current.matches("updateListName") &&
-                        current.context.listId === list.id
+                        current.matches("updateGroupName") &&
+                        current.context.groupId === group.id
                       }
                     >
                       {currentCards.map((card) => {
@@ -429,14 +409,14 @@ const BoardDetail = () => {
                   );
                 })}
                 {provided.placeholder}
-                {current.matches("createList") ? (
+                {current.matches("createGroup") ? (
                   <CreateGroupForm
-                    onClickApplyAdd={(listName) => {
-                      if (!listName) return;
+                    onClickApplyAdd={(groupName) => {
+                      if (!groupName) return;
 
                       const action = createGroup({
                         boardId: board.id,
-                        name: listName,
+                        name: groupName,
                       });
 
                       dispatch(action);
@@ -445,7 +425,7 @@ const BoardDetail = () => {
                     onClickCancelAdd={() => send("IDLE")}
                   />
                 ) : (
-                  <CreateGroupButton onClick={() => send("CREATE_LIST")} />
+                  <CreateGroupButton onClick={() => send("CREATE_GROUP")} />
                 )}
               </GroupWrapper>
             )}

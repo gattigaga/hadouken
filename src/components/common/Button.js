@@ -36,7 +36,7 @@ const Button = ({ className, label, color, onClick, isDisabled }) => (
 
 Button.propTypes = {
   className: PropTypes.string,
-  label: PropTypes.string,
+  label: PropTypes.any,
   color: PropTypes.string,
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,

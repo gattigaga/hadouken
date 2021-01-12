@@ -18,6 +18,7 @@ import {
   MOVE_CHECK,
   DELETE_GROUPS,
   DELETE_CARDS,
+  DELETE_CHECKS,
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -342,6 +343,29 @@ export const checks = (state = [], action) => {
 
         const result = afterDeletedChecks
           .filter((item) => item.cardId !== check.cardId)
+          .concat(sortedChecks);
+
+        return result;
+      })();
+
+    case DELETE_CHECKS:
+      return (() => {
+        const afterDeletedChecks = state.filter(
+          (item) => !payload.includes(item.id)
+        );
+
+        const checks = state.find((item) => payload.includes(item.id));
+
+        // Get current card's checks
+        // assign new index for the checks
+        // and sort it
+        const sortedChecks = afterDeletedChecks
+          .filter((item) => checks.includes(item.cardId))
+          .map((item, index) => ({ ...item, index }))
+          .sort((a, b) => a.index - b.index);
+
+        const result = afterDeletedChecks
+          .filter((item) => !checks.includes(item.cardId))
           .concat(sortedChecks);
 
         return result;

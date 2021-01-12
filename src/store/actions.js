@@ -22,3 +22,4 @@ export const CREATE_CHECK = "CREATE_CHECK";
 export const UPDATE_CHECK = "UPDATE_CHECK";
 export const MOVE_CHECK = "MOVE_CHECK";
 export const DELETE_CHECK = "DELETE_CHECK";
+export const DELETE_CHECKS = "DELETE_CHECKS";

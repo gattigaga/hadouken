@@ -12,9 +12,10 @@ import {
   UPDATE_CARD,
   DELETE_CARD,
   DELETE_CARDS,
-  DELETE_CHECK,
   CREATE_CHECK,
   UPDATE_CHECK,
+  DELETE_CHECK,
+  DELETE_CHECKS,
   MOVE_CARD,
   MOVE_GROUP,
   MOVE_CHECK,
@@ -314,4 +315,15 @@ export const moveCheck = (id, { index }) => ({
 export const deleteCheck = (id) => ({
   type: DELETE_CHECK,
   payload: id,
+});
+
+/**
+ * Create action for delete checks.
+ *
+ * @param {String[]} ids Check IDs
+ * @return {Object} Action
+ */
+export const deleteChecks = (ids) => ({
+  type: DELETE_CHECKS,
+  payload: ids,
 });

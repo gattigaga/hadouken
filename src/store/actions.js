@@ -15,6 +15,7 @@ export const CREATE_CARD = "CREATE_CARD";
 export const UPDATE_CARD = "UPDATE_CARD";
 export const MOVE_CARD = "MOVE_CARD";
 export const DELETE_CARD = "DELETE_CARD";
+export const DELETE_CARDS = "DELETE_CARDS";
 
 // Checks
 export const CREATE_CHECK = "CREATE_CHECK";

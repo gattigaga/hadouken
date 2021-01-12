@@ -11,6 +11,7 @@ import {
   CREATE_CARD,
   UPDATE_CARD,
   DELETE_CARD,
+  DELETE_CARDS,
   DELETE_CHECK,
   CREATE_CHECK,
   UPDATE_CHECK,
@@ -228,6 +229,17 @@ export const moveCard = (id, { groupId, index }) => ({
 export const deleteCard = (id) => ({
   type: DELETE_CARD,
   payload: id,
+});
+
+/**
+ * Create action for delete cards.
+ *
+ * @param {String[]} ids Card IDs
+ * @return {Object} Action
+ */
+export const deleteCards = (ids) => ({
+  type: DELETE_CARDS,
+  payload: ids,
 });
 
 /**

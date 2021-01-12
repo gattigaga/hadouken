@@ -171,7 +171,7 @@ const BoardDetail = () => {
     dispatch(deleteChecks(checkIds));
   };
 
-  const reorderGroup = (result) => {
+  const updateOrder = (result) => {
     const { type, source, destination, draggableId } = result;
 
     if (!destination) return;
@@ -262,7 +262,7 @@ const BoardDetail = () => {
           }}
           onClickDelete={removeBoard}
         />
-        <DragDropContext onDragEnd={reorderGroup}>
+        <DragDropContext onDragEnd={updateOrder}>
           <Droppable
             droppableId="droppable-root"
             direction="horizontal"

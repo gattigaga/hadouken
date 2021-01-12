@@ -21,9 +21,10 @@ import {
   deleteGroup,
   moveGroup,
   createCard,
-  deleteCard,
   moveCard,
-  deleteCheck,
+  deleteCards,
+  deleteChecks,
+  deleteGroups,
 } from "../store/actionCreators";
 
 const Container = styled.div`
@@ -111,7 +112,6 @@ const machine = Machine({
 
 const BoardDetail = () => {
   const [current, send] = useMachine(machine);
-  const [newBoardName, setNewBoardName] = useState("");
   const [groupId, setGroupId] = useState(null);
   const { boardSlug } = useParams();
 
@@ -140,28 +140,35 @@ const BoardDetail = () => {
     history.goBack();
 
     setTimeout(() => {
-      groups.forEach((group) => {
-        const currentCards = cards
-          .filter((card) => card.groupId === group.id)
-          .sort((a, b) => a.index - b.index);
+      const groupIds = groups.map((group) => group.id);
 
-        currentCards.forEach((card) => {
-          const currentChecks = checks.filter(
-            (check) => check.cardId === card.id
-          );
+      const cardIds = cards
+        .filter((card) => groupIds.includes(card.groupId))
+        .map((card) => card.id);
 
-          currentChecks.forEach((check) => {
-            dispatch(deleteCheck(check.id));
-          });
-
-          dispatch(deleteCard(card.id));
-        });
-
-        dispatch(deleteGroup(group.id));
-      });
+      const checkIds = checks
+        .filter((check) => cardIds.includes(check.cardId))
+        .map((check) => check.id);
 
       dispatch(deleteBoard(board.id));
+      dispatch(deleteGroups(groupIds));
+      dispatch(deleteCards(cardIds));
+      dispatch(deleteChecks(checkIds));
     }, 50);
+  };
+
+  const removeGroup = (group) => {
+    const cardIds = cards
+      .filter((card) => card.groupId === group.id)
+      .map((card) => card.id);
+
+    const checkIds = checks
+      .filter((check) => cardIds.includes(check.cardId))
+      .map((check) => check.id);
+
+    dispatch(deleteGroup(group.id));
+    dispatch(deleteCards(cardIds));
+    dispatch(deleteChecks(checkIds));
   };
 
   const reorderGroup = (result) => {
@@ -190,9 +197,41 @@ const BoardDetail = () => {
     }
   };
 
-  useEffect(() => {
-    setNewBoardName(board ? board.name : "");
-  }, [board]);
+  const updateBoardName = (name) => {
+    dispatch(updateBoard(board.id, { name }));
+    send("IDLE");
+  };
+
+  const updateGroupName = (group, name) => {
+    if (!name) return;
+
+    dispatch(updateGroup(group.id, { name }));
+    send("IDLE");
+  };
+
+  const addNewCard = (group, name) => {
+    if (!name) return;
+
+    dispatch(
+      createCard({
+        groupId: group.id,
+        name,
+      })
+    );
+  };
+
+  const addNewGroup = (name) => {
+    if (!name) return;
+
+    dispatch(
+      createGroup({
+        boardId: board.id,
+        name,
+      })
+    );
+
+    send("IDLE");
+  };
 
   useEffect(() => {
     if (isUpdateBoardName) {
@@ -210,18 +249,9 @@ const BoardDetail = () => {
       <Wrapper>
         <Header
           refInput={refInputName}
-          title={newBoardName}
+          title={board.name}
           isEdit={current.matches("updateBoardName")}
-          onChangeTitle={(event) => setNewBoardName(event.target.value)}
-          onApplyTitle={() => {
-            dispatch(
-              updateBoard(board.id, {
-                name: newBoardName,
-              })
-            );
-
-            send("IDLE");
-          }}
+          onApplyTitle={updateBoardName}
           onClickBack={(event) => {
             event.stopPropagation();
             history.goBack();
@@ -254,44 +284,20 @@ const BoardDetail = () => {
                       id={group.id}
                       index={group.index}
                       name={group.name}
-                      onNameUpdated={(newGroupName) => {
-                        if (!newGroupName) return;
-
-                        dispatch(updateGroup(group.id, { name: newGroupName }));
-                        send("IDLE");
+                      onNameUpdated={(newName) => {
+                        updateGroupName(group, newName);
                       }}
                       onClickName={() => {
                         send("UPDATE_GROUP_NAME");
                         setGroupId(group.id);
                       }}
-                      onClickClose={() => {
-                        currentCards.forEach((card) => {
-                          const currentChecks = checks.filter(
-                            (check) => check.cardId === card.id
-                          );
-
-                          currentChecks.forEach((check) => {
-                            dispatch(deleteCheck(check.id));
-                          });
-
-                          dispatch(deleteCard(card.id));
-                        });
-
-                        dispatch(deleteGroup(group.id));
-                      }}
+                      onClickClose={() => removeGroup(group)}
                       onClickAdd={() => {
                         send("CREATE_CARD");
                         setGroupId(group.id);
                       }}
                       onClickApplyAdd={(cardName) => {
-                        if (!cardName) return;
-
-                        const action = createCard({
-                          groupId: group.id,
-                          name: cardName,
-                        });
-
-                        dispatch(action);
+                        addNewCard(group, cardName);
                       }}
                       onClickCancelAdd={() => send("IDLE")}
                       isWillAdd={
@@ -331,17 +337,7 @@ const BoardDetail = () => {
                 {provided.placeholder}
                 {current.matches("createGroup") ? (
                   <CreateGroupForm
-                    onClickApplyAdd={(groupName) => {
-                      if (!groupName) return;
-
-                      const action = createGroup({
-                        boardId: board.id,
-                        name: groupName,
-                      });
-
-                      dispatch(action);
-                      send("IDLE");
-                    }}
+                    onClickApplyAdd={addNewGroup}
                     onClickCancelAdd={() => send("IDLE")}
                   />
                 ) : (

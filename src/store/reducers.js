@@ -17,6 +17,7 @@ import {
   MOVE_GROUP,
   MOVE_CHECK,
   DELETE_GROUPS,
+  DELETE_CARDS,
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -243,6 +244,29 @@ export const cards = (state = [], action) => {
 
         const result = afterDeletedCards
           .filter((item) => item.groupId !== card.groupId)
+          .concat(sortedCards);
+
+        return result;
+      })();
+
+    case DELETE_CARDS:
+      return (() => {
+        const afterDeletedCards = state.filter(
+          (item) => !payload.includes(item.id)
+        );
+
+        const cards = state.find((item) => payload.includes(item.id));
+
+        // Get current group's cards
+        // assign new index for the cards
+        // and sort it
+        const sortedCards = afterDeletedCards
+          .filter((item) => cards.includes(item.groupId))
+          .map((item, index) => ({ ...item, index }))
+          .sort((a, b) => a.index - b.index);
+
+        const result = afterDeletedCards
+          .filter((item) => !cards.includes(item.groupId))
           .concat(sortedCards);
 
         return result;

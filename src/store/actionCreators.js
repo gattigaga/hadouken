@@ -7,6 +7,7 @@ import {
   CREATE_GROUP,
   UPDATE_GROUP,
   DELETE_GROUP,
+  DELETE_GROUPS,
   CREATE_CARD,
   UPDATE_CARD,
   DELETE_CARD,
@@ -138,6 +139,17 @@ export const moveGroup = (id, { index }) => ({
 export const deleteGroup = (id) => ({
   type: DELETE_GROUP,
   payload: id,
+});
+
+/**
+ * Create action for delete groups.
+ *
+ * @param {String[]} ids Group IDs
+ * @return {Object} Action
+ */
+export const deleteGroups = (ids) => ({
+  type: DELETE_GROUPS,
+  payload: ids,
 });
 
 /**

@@ -16,6 +16,7 @@ import {
   MOVE_CARD,
   MOVE_GROUP,
   MOVE_CHECK,
+  DELETE_GROUPS,
 } from "./actions";
 
 export const boards = (state = [], action) => {
@@ -107,6 +108,31 @@ export const groups = (state = [], action) => {
 
         const result = afterDeletedGroups
           .filter((item) => item.boardId !== group.boardId)
+          .concat(sortedGroups);
+
+        return result;
+      })();
+
+    case DELETE_GROUPS:
+      return (() => {
+        const afterDeletedGroups = state.filter(
+          (item) => !payload.includes(item.id)
+        );
+
+        const boardIds = state
+          .filter((item) => payload.includes(item.id))
+          .map((item) => item.boardId);
+
+        // Get current board's groups
+        // assign new index for the groups
+        // and sort it
+        const sortedGroups = afterDeletedGroups
+          .filter((item) => boardIds.includes(item.boardId))
+          .map((item, index) => ({ ...item, index }))
+          .sort((a, b) => a.index - b.index);
+
+        const result = afterDeletedGroups
+          .filter((item) => !boardIds.includes(item.boardId))
           .concat(sortedGroups);
 
         return result;

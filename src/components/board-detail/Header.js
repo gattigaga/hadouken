@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import chroma from "chroma-js";
@@ -63,52 +63,58 @@ const Header = ({
   refInput,
   title,
   isEdit,
-  onChangeTitle,
   onApplyTitle,
   onClickBack,
   onClickTitle,
   onClickDelete,
-}) => (
-  <Container>
-    <ButtonBack>
-      <IconBack icon={faChevronLeft} onClick={onClickBack} />
-    </ButtonBack>
-    {isEdit ? (
-      <Input
-        ref={refInput}
-        type="text"
-        value={title}
-        onClick={(event) => event.stopPropagation()}
-        onChange={onChangeTitle}
-        onBlur={onApplyTitle}
-        onKeyDown={(event) => {
-          switch (event.keyCode) {
-            case 13: // Enter is pressed
-            case 27: // Escape is pressed
-              onApplyTitle();
-              break;
+}) => {
+  const [newTitle, setNewTitle] = useState("");
 
-            default:
-              break;
-          }
-        }}
+  useEffect(() => {
+    setNewTitle(title);
+  }, [title]);
+
+  return (
+    <Container>
+      <ButtonBack>
+        <IconBack icon={faChevronLeft} onClick={onClickBack} />
+      </ButtonBack>
+      {isEdit ? (
+        <Input
+          ref={refInput}
+          type="text"
+          value={newTitle}
+          onClick={(event) => event.stopPropagation()}
+          onChange={(event) => setNewTitle(event.target.value)}
+          onBlur={() => onApplyTitle(newTitle)}
+          onKeyDown={(event) => {
+            switch (event.keyCode) {
+              case 13: // Enter is pressed
+              case 27: // Escape is pressed
+                onApplyTitle(newTitle);
+                break;
+
+              default:
+                break;
+            }
+          }}
+        />
+      ) : (
+        <Title onClick={onClickTitle}>{title}</Title>
+      )}
+      <StyledButton
+        label={<IconDelete icon={faTrash} />}
+        color="#5cb5fa"
+        onClick={onClickDelete}
       />
-    ) : (
-      <Title onClick={onClickTitle}>{title}</Title>
-    )}
-    <StyledButton
-      label={<IconDelete icon={faTrash} />}
-      color="#5cb5fa"
-      onClick={onClickDelete}
-    />
-  </Container>
-);
+    </Container>
+  );
+};
 
 Header.propTypes = {
   refInput: PropTypes.any,
   title: PropTypes.string,
   isEdit: PropTypes.bool,
-  onChangeTitle: PropTypes.func,
   onApplyTitle: PropTypes.func,
   onClickBack: PropTypes.func,
   onClickTitle: PropTypes.func,

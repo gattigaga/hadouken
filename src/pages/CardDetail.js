@@ -12,7 +12,7 @@ import {
   faList,
   faCheckSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { Machine, assign } from "xstate";
+import { Machine } from "xstate";
 import { useMachine } from "@xstate/react";
 
 import Button from "../components/common/Button";
@@ -182,7 +182,7 @@ const modalStyles = {
 };
 
 const machine = Machine({
-  id: "machine",
+  id: "cardDetail",
   initial: "idle",
   states: {
     idle: {
@@ -190,12 +190,7 @@ const machine = Machine({
         UPDATE_CARD_NAME: "updateCardName",
         UPDATE_CARD_DESCRIPTION: "updateCardDescription",
         CREATE_CHECK: "createCheck",
-        UPDATE_CHECK: {
-          target: "updateCheck",
-          actions: assign({
-            checkId: (_, event) => event.checkId,
-          }),
-        },
+        UPDATE_CHECK: "updateCheck",
       },
     },
     updateCardName: {
@@ -203,12 +198,7 @@ const machine = Machine({
         IDLE: "idle",
         UPDATE_CARD_DESCRIPTION: "updateCardDescription",
         CREATE_CHECK: "createCheck",
-        UPDATE_CHECK: {
-          target: "updateCheck",
-          actions: assign({
-            checkId: (_, event) => event.checkId,
-          }),
-        },
+        UPDATE_CHECK: "updateCheck",
       },
     },
     updateCardDescription: {
@@ -216,12 +206,7 @@ const machine = Machine({
         IDLE: "idle",
         UPDATE_CARD_NAME: "updateCardName",
         CREATE_CHECK: "createCheck",
-        UPDATE_CHECK: {
-          target: "updateCheck",
-          actions: assign({
-            checkId: (_, event) => event.checkId,
-          }),
-        },
+        UPDATE_CHECK: "updateCheck",
       },
     },
     createCheck: {
@@ -229,12 +214,7 @@ const machine = Machine({
         IDLE: "idle",
         UPDATE_CARD_NAME: "updateCardName",
         UPDATE_CARD_DESCRIPTION: "updateCardDescription",
-        UPDATE_CHECK: {
-          target: "updateCheck",
-          actions: assign({
-            checkId: (_, event) => event.checkId,
-          }),
-        },
+        UPDATE_CHECK: "updateCheck",
       },
     },
     updateCheck: {
@@ -243,12 +223,7 @@ const machine = Machine({
         UPDATE_CARD_NAME: "updateCardName",
         UPDATE_CARD_DESCRIPTION: "updateCardDescription",
         CREATE_CHECK: "createCheck",
-        UPDATE_CHECK: {
-          target: "updateCheck",
-          actions: assign({
-            checkId: (_, event) => event.checkId,
-          }),
-        },
+        UPDATE_CHECK: "updateCheck",
       },
     },
   },
@@ -262,6 +237,7 @@ const CardDetail = () => {
   const { cardSlug } = useParams();
   const history = useHistory();
   const [current, send] = useMachine(machine);
+  const [checkId, setCheckId] = useState(null);
   const refInputName = useRef(null);
   const refInputDescription = useRef(null);
   const refInputCheck = useRef(null);
@@ -483,9 +459,10 @@ const CardDetail = () => {
                           updateCheck(check.id, { isChecked: !check.isChecked })
                         );
                       }}
-                      onClickLabel={() =>
-                        send("UPDATE_CHECK", { checkId: check.id })
-                      }
+                      onClickLabel={() => {
+                        send("UPDATE_CHECK");
+                        setCheckId(check.id);
+                      }}
                       onClickApplyUpdate={(newLabel) => {
                         dispatch(updateCheck(check.id, { label: newLabel }));
                         send("IDLE");
@@ -496,8 +473,7 @@ const CardDetail = () => {
                       }}
                       onClickDelete={() => dispatch(deleteCheck(check.id))}
                       isWillUpdateLabel={
-                        current.matches("updateCheck") &&
-                        current.context.checkId === check.id
+                        current.matches("updateCheck") && checkId === check.id
                       }
                     />
                   ))}

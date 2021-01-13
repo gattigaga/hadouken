@@ -135,8 +135,7 @@ const BoardDetail = () => {
 
   const isUpdateBoardName = current.matches("updateBoardName");
 
-  const removeBoard = (event) => {
-    event.stopPropagation();
+  const removeBoard = () => {
     history.goBack();
 
     setTimeout(() => {
@@ -252,14 +251,8 @@ const BoardDetail = () => {
           title={board.name}
           isEdit={current.matches("updateBoardName")}
           onApplyTitle={updateBoardName}
-          onClickBack={(event) => {
-            event.stopPropagation();
-            history.goBack();
-          }}
-          onClickTitle={(event) => {
-            event.stopPropagation();
-            send("UPDATE_BOARD_NAME");
-          }}
+          onClickBack={() => history.goBack()}
+          onClickTitle={() => send("UPDATE_BOARD_NAME")}
           onClickDelete={removeBoard}
         />
         <DragDropContext onDragEnd={updateOrder}>

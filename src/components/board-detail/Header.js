@@ -77,7 +77,13 @@ const Header = ({
   return (
     <Container>
       <ButtonBack>
-        <IconBack icon={faChevronLeft} onClick={onClickBack} />
+        <IconBack
+          icon={faChevronLeft}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClickBack();
+          }}
+        />
       </ButtonBack>
       {isEdit ? (
         <Input
@@ -100,12 +106,22 @@ const Header = ({
           }}
         />
       ) : (
-        <Title onClick={onClickTitle}>{title}</Title>
+        <Title
+          onClick={(event) => {
+            event.stopPropagation();
+            onClickTitle();
+          }}
+        >
+          {title}
+        </Title>
       )}
       <StyledButton
         label={<IconDelete icon={faTrash} />}
         color="#5cb5fa"
-        onClick={onClickDelete}
+        onClick={(event) => {
+          event.stopPropagation();
+          onClickDelete();
+        }}
       />
     </Container>
   );

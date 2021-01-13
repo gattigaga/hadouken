@@ -6,16 +6,12 @@ import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import {
-  faTimes,
-  faIdCard,
-  faList,
-  faCheckSquare,
-} from "@fortawesome/free-solid-svg-icons";
+import { faList, faCheckSquare } from "@fortawesome/free-solid-svg-icons";
 import { Machine } from "xstate";
 import { useMachine } from "@xstate/react";
 
 import Button from "../components/common/Button";
+import Header from "../components/card-detail/Header";
 import Check from "../components/card-detail/Check";
 import Progress from "../components/card-detail/Progress";
 import {
@@ -39,44 +35,6 @@ const Container = styled.div`
 const Icon = styled(FontAwesomeIcon)`
   color: #777;
   cursor: pointer;
-`;
-
-const CardIcon = styled(Icon)`
-  margin-top: 4px;
-`;
-
-const CloseIcon = styled(Icon)`
-  font-size: 24px;
-  margin-top: 4px;
-  margin-left: auto;
-`;
-
-const Header = styled.div`
-  font-family: "Roboto";
-  color: #777;
-  display: flex;
-  margin-bottom: 24px;
-`;
-
-const NameWrapper = styled.div`
-  margin-left: 16px;
-  margin-right: 32px;
-  width: 100%;
-`;
-
-const Name = styled.h2`
-  font-size: 24px;
-  font-family: "Roboto";
-  color: #777;
-  margin: 0px;
-`;
-
-const ListName = styled.p`
-  font-size: 14px;
-  font-family: "Roboto";
-  color: #777;
-  margin: 0px;
-  margin-top: 8px;
 `;
 
 const Subtitle = styled.h3`
@@ -103,19 +61,6 @@ const Description = styled.p`
     border-radius: 4px;
     padding: 12px;
   `}
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 42px;
-  font-family: "Roboto";
-  font-size: 24px;
-  outline: none;
-  padding: 0px 8px;
-  margin-right: 24px;
-  box-sizing: border-box;
-  border-radius: 4px;
-  border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
 `;
 
 const Textarea = styled.textarea`
@@ -160,12 +105,6 @@ const EditWrapper = styled.div`
 const AddCheckButton = styled(Button)`
   margin-top: 8px;
   margin-left: 32px;
-`;
-
-const DeleteButton = styled.span`
-  font-size: 12px;
-  text-decoration: underline;
-  cursor: pointer;
 `;
 
 const modalStyles = {
@@ -313,72 +252,36 @@ const CardDetail = () => {
       isOpen
     >
       <Container onClick={() => send("IDLE")}>
-        <Header>
-          <CardIcon icon={faIdCard} />
-          <NameWrapper>
-            {current.matches("updateCardName") ? (
-              <Input
-                ref={refInputName}
-                type="text"
-                value={newName}
-                onClick={(event) => event.stopPropagation()}
-                onChange={(event) => setNewName(event.target.value)}
-                onBlur={() => dispatch(updateCard(card.id, { name: newName }))}
-                onKeyDown={(event) => {
-                  switch (event.keyCode) {
-                    case 13: // Enter is pressed
-                      dispatch(updateCard(card.id, { name: newName }));
-                      send("IDLE");
-                      break;
+        <Header
+          refInput={refInputName}
+          title={card.name}
+          groupName={group.name}
+          isEdit={current.matches("updateCardName")}
+          onApplyTitle={(newName) => {
+            dispatch(updateCard(card.id, { name: newName }));
+            send("IDLE");
+          }}
+          onClickClose={() => {
+            send("IDLE");
+            history.goBack();
+          }}
+          onClickTitle={(event) => {
+            event.stopPropagation();
+            send("UPDATE_CARD_NAME");
+          }}
+          onClickDelete={(event) => {
+            event.stopPropagation();
+            history.goBack();
 
-                    case 27: // Escape is pressed
-                      setNewName(card.name);
-                      send("IDLE");
-                      break;
+            setTimeout(() => {
+              checks.forEach((check) => {
+                dispatch(deleteCheck(check.id));
+              });
 
-                    default:
-                      break;
-                  }
-                }}
-              />
-            ) : (
-              <Name
-                onClick={(event) => {
-                  event.stopPropagation();
-                  send("UPDATE_CARD_NAME");
-                }}
-              >
-                {card.name}
-              </Name>
-            )}
-            <ListName>
-              in list <strong>{list.name}</strong>{" "}
-              <DeleteButton
-                onClick={(event) => {
-                  event.stopPropagation();
-                  history.goBack();
-
-                  setTimeout(() => {
-                    currentChecks.forEach((check) => {
-                      dispatch(deleteCheck(check.id));
-                    });
-
-                    dispatch(deleteCard(card.id));
-                  }, 50);
-                }}
-              >
-                (Delete)
-              </DeleteButton>
-            </ListName>
-          </NameWrapper>
-          <CloseIcon
-            icon={faTimes}
-            onClick={() => {
-              send("IDLE");
-              history.goBack();
-            }}
-          />
-        </Header>
+              dispatch(deleteCard(card.id));
+            }, 50);
+          }}
+        />
         <Section>
           <SectionHeader>
             <Icon icon={faList} />

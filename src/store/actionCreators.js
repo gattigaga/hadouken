@@ -22,6 +22,25 @@ import {
 } from "./actions";
 
 /**
+ * Prevent unallowed keys to appear in data.
+ *
+ * @param {Object} data Data
+ * @param {String[]} allowedKeys Allowed keys
+ * @return {Object} Filtered data
+ */
+const filter = (data, allowedKeys) => {
+  const result = {};
+
+  allowedKeys.forEach((key) => {
+    if (data[key] === undefined) return;
+
+    result[key] = data[key];
+  });
+
+  return result;
+};
+
+/**
  * Create action for create board.
  *
  * @param {Object} data Data
@@ -52,15 +71,17 @@ export const createBoard = ({ name }) => {
  * @param {String} data.name New board name
  * @return {Object} Action
  */
-export const updateBoard = (id, { name }) => ({
-  type: UPDATE_BOARD,
-  payload: {
-    id,
-    data: {
-      name,
+export const updateBoard = (id, data) => {
+  const filteredData = filter(data, ["name"]);
+
+  return {
+    type: UPDATE_BOARD,
+    payload: {
+      id,
+      data: filteredData,
     },
-  },
-});
+  };
+};
 
 /**
  * Create action for delete board.
@@ -104,15 +125,17 @@ export const createGroup = ({ boardId, name }) => {
  * @param {String} data.name New group name
  * @return {Object} Action
  */
-export const updateGroup = (id, { name }) => ({
-  type: UPDATE_GROUP,
-  payload: {
-    id,
-    data: {
-      name,
+export const updateGroup = (id, data) => {
+  const filteredData = filter(data, ["name"]);
+
+  return {
+    type: UPDATE_GROUP,
+    payload: {
+      id,
+      data: filteredData,
     },
-  },
-});
+  };
+};
 
 /**
  * Create action for move group.
@@ -190,16 +213,17 @@ export const createCard = ({ groupId, name }) => {
  * @param {String} data.description New card description
  * @return {Object} Action
  */
-export const updateCard = (id, { name, description }) => ({
-  type: UPDATE_CARD,
-  payload: {
-    id,
-    data: {
-      name,
-      description,
+export const updateCard = (id, data) => {
+  const filteredData = filter(data, ["name", "description"]);
+
+  return {
+    type: UPDATE_CARD,
+    payload: {
+      id,
+      data: filteredData,
     },
-  },
-});
+  };
+};
 
 /**
  * Create action for move card.
@@ -277,16 +301,17 @@ export const createCheck = ({ cardId, label }) => {
  * @param {String} data.isChecked Is this checked or not ?
  * @return {Object} Action
  */
-export const updateCheck = (id, { label, isChecked }) => ({
-  type: UPDATE_CHECK,
-  payload: {
-    id,
-    data: {
-      label,
-      isChecked,
+export const updateCheck = (id, data) => {
+  const filteredData = filter(data, ["label", "isChecked"]);
+
+  return {
+    type: UPDATE_CHECK,
+    payload: {
+      id,
+      data: filteredData,
     },
-  },
-});
+  };
+};
 
 /**
  * Create action for move check.

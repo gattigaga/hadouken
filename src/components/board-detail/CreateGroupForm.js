@@ -42,7 +42,7 @@ const Input = styled.input`
   border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
 `;
 
-const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
+const CreateGroupForm = ({ onClickApply, onClickCancel }) => {
   const [name, setName] = useState("");
   const refInput = useRef(null);
 
@@ -64,11 +64,11 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
           onKeyDown={(event) => {
             switch (event.keyCode) {
               case 13: // Enter is pressed
-                onClickApplyAdd(name);
+                onClickApply(name);
                 break;
 
               case 27: // Escape is pressed
-                onClickCancelAdd();
+                onClickCancel();
                 break;
 
               default:
@@ -82,7 +82,7 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
           label="Apply"
           onClick={(event) => {
             event.stopPropagation();
-            onClickApplyAdd(name);
+            onClickApply(name);
           }}
         />
         <Button
@@ -90,7 +90,7 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
           color="#e74c3c"
           onClick={(event) => {
             event.stopPropagation();
-            onClickCancelAdd();
+            onClickCancel();
           }}
         />
       </Footer>
@@ -99,8 +99,8 @@ const CreateGroupForm = ({ onClickApplyAdd, onClickCancelAdd }) => {
 };
 
 CreateGroupForm.propTypes = {
-  onClickApplyAdd: PropTypes.func,
-  onClickCancelAdd: PropTypes.func,
+  onClickApply: PropTypes.func,
+  onClickCancel: PropTypes.func,
 };
 
 export default CreateGroupForm;

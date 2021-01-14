@@ -330,8 +330,8 @@ const BoardDetail = () => {
                 {provided.placeholder}
                 {current.matches("createGroup") ? (
                   <CreateGroupForm
-                    onClickApplyAdd={addNewGroup}
-                    onClickCancelAdd={() => send("IDLE")}
+                    onClickApply={addNewGroup}
+                    onClickCancel={() => send("IDLE")}
                   />
                 ) : (
                   <CreateGroupButton onClick={() => send("CREATE_GROUP")} />

@@ -1,24 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
-import chroma from "chroma-js";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { faList, faCheckSquare } from "@fortawesome/free-solid-svg-icons";
 import { Machine } from "xstate";
 import { useMachine } from "@xstate/react";
 
-import Button from "../components/common/Button";
 import Header from "../components/card-detail/Header";
-import Check from "../components/card-detail/Check";
-import Progress from "../components/card-detail/Progress";
+import Description from "../components/card-detail/Description";
+import CheckList from "../components/card-detail/CheckList";
 import {
   updateCard,
   createCheck,
   updateCheck,
   deleteCheck,
+  deleteChecks,
   deleteCard,
   moveCheck,
 } from "../store/actionCreators";
@@ -30,81 +26,6 @@ const Container = styled.div`
   background: #eee;
   border-radius: 4px;
   box-sizing: border-box;
-`;
-
-const Icon = styled(FontAwesomeIcon)`
-  color: #777;
-  cursor: pointer;
-`;
-
-const Subtitle = styled.h3`
-  font-size: 18px;
-  font-family: "Roboto";
-  color: #777;
-  margin: 0px;
-  margin-left: 16px;
-`;
-
-const Description = styled.p`
-  font-size: 14px;
-  font-family: "Roboto";
-  color: #777;
-  margin: 0px;
-  line-height: 1.5em;
-  cursor: pointer;
-
-  ${({ isEmpty }) =>
-    isEmpty &&
-    `
-    height: 54px;
-    background: #ddd;
-    border-radius: 4px;
-    padding: 12px;
-  `}
-`;
-
-const Textarea = styled.textarea`
-  width: 100%;
-  height: ${({ height }) => height || 96}px;
-  font-family: "Roboto";
-  font-size: 14px;
-  outline: none;
-  padding: 8px;
-  line-height: 1.5em;
-  margin-right: 24px;
-  margin-bottom: 8px;
-  box-sizing: border-box;
-  resize: none;
-  border-radius: 4px;
-  border: 2px solid ${chroma("#3498db").darken(0.6).hex()};
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const ApplyButton = styled(Button)`
-  margin-right: 8px;
-`;
-
-const Section = styled.div`
-  margin-top: 36px;
-`;
-
-const EditWrapper = styled.div`
-  padding-left: 32px;
-`;
-
-const AddCheckButton = styled(Button)`
-  margin-top: 8px;
-  margin-left: 32px;
 `;
 
 const modalStyles = {
@@ -169,37 +90,36 @@ const machine = Machine({
 });
 
 const CardDetail = () => {
-  const cards = useSelector((state) => state.cards);
-  const lists = useSelector((state) => state.lists);
-  const checks = useSelector((state) => state.checks);
-  const dispatch = useDispatch();
-  const { cardSlug } = useParams();
-  const history = useHistory();
   const [current, send] = useMachine(machine);
-  const [checkId, setCheckId] = useState(null);
+  const { cardSlug } = useParams();
+
+  // Get current card
+  const card = useSelector((state) =>
+    state.cards.find((card) => card.slug === cardSlug)
+  );
+
+  // Get group that contains current card
+  const group = useSelector((state) =>
+    state.groups.find((group) => group.id === card.groupId)
+  );
+
+  // Get current card's checks
+  const checks = useSelector((state) =>
+    state.checks.filter((check) => check.cardId === card.id)
+  );
+
+  const dispatch = useDispatch();
+  const history = useHistory();
   const refInputName = useRef(null);
   const refInputDescription = useRef(null);
   const refInputCheck = useRef(null);
 
-  const card = cards.find((card) => card.slug === cardSlug);
-  const list = lists.find((list) => list.id === card.listId);
-  const currentChecks = checks.filter((check) => check.cardId === card.id);
-  const totalChecked = currentChecks.filter((check) => !!check.isChecked)
-    .length;
-  const divide = totalChecked / currentChecks.length;
+  const totalChecked = checks.filter((check) => !!check.isChecked).length;
+  const divide = totalChecked / checks.length;
   const progress = Number.isNaN(divide) ? 0 : (divide * 100).toFixed(0);
   const isUpdateCardName = current.matches("updateCardName");
   const isUpdateCardDescription = current.matches("updateCardDescription");
   const isCreateCheck = current.matches("createCheck");
-
-  const [newName, setNewName] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newCheck, setNewCheck] = useState("");
-
-  useEffect(() => {
-    setNewName(card ? card.name : "");
-    setNewDescription(card ? card.description : "");
-  }, [card]);
 
   useEffect(() => {
     if (isUpdateCardName) {
@@ -219,7 +139,7 @@ const CardDetail = () => {
     }
   }, [isCreateCheck]);
 
-  const reorder = (result) => {
+  const updateCheckOrder = (result) => {
     const { source, destination, draggableId } = result;
 
     if (!destination) return;
@@ -236,7 +156,49 @@ const CardDetail = () => {
     );
   };
 
-  if (!card || !list) return null;
+  const updateCardName = (name) => {
+    dispatch(updateCard(card.id, { name }));
+    send("IDLE");
+  };
+
+  const updateCardDescription = (description) => {
+    dispatch(updateCard(card.id, { description }));
+    send("IDLE");
+  };
+
+  const addNewCheck = (label) => {
+    dispatch(createCheck({ cardId: card.id, label }));
+  };
+
+  const toggleCheck = (item) => {
+    dispatch(
+      updateCheck(item.id, {
+        isChecked: !item.isChecked,
+      })
+    );
+  };
+
+  const updateCheckLabel = (item, label) => {
+    dispatch(updateCheck(item.id, { label }));
+    send("IDLE");
+  };
+
+  const removeCheck = (item) => {
+    dispatch(deleteCheck(item.id));
+  };
+
+  const removeCard = () => {
+    history.goBack();
+
+    setTimeout(() => {
+      const checkIds = checks.map((check) => check.id);
+
+      dispatch(deleteChecks(checkIds));
+      dispatch(deleteCard(card.id));
+    }, 50);
+  };
+
+  if (!card || !group) return null;
 
   return (
     <Modal
@@ -257,198 +219,39 @@ const CardDetail = () => {
           title={card.name}
           groupName={group.name}
           isEdit={current.matches("updateCardName")}
-          onApplyTitle={(newName) => {
-            dispatch(updateCard(card.id, { name: newName }));
-            send("IDLE");
-          }}
+          onApplyTitle={updateCardName}
           onClickClose={() => {
             send("IDLE");
             history.goBack();
           }}
-          onClickTitle={(event) => {
-            event.stopPropagation();
-            send("UPDATE_CARD_NAME");
-          }}
-          onClickDelete={(event) => {
-            event.stopPropagation();
-            history.goBack();
-
-            setTimeout(() => {
-              checks.forEach((check) => {
-                dispatch(deleteCheck(check.id));
-              });
-
-              dispatch(deleteCard(card.id));
-            }, 50);
-          }}
+          onClickTitle={() => send("UPDATE_CARD_NAME")}
+          onClickDelete={removeCard}
         />
-        <Section>
-          <SectionHeader>
-            <Icon icon={faList} />
-            <Subtitle>Description</Subtitle>
-          </SectionHeader>
-          <EditWrapper>
-            {current.matches("updateCardDescription") ? (
-              <>
-                <Textarea
-                  ref={refInputDescription}
-                  placeholder="Enter a description..."
-                  value={newDescription}
-                  onClick={(event) => event.stopPropagation()}
-                  onChange={(event) => setNewDescription(event.target.value)}
-                  onKeyDown={(event) => {
-                    const isEscapePressed = event.keyCode === 27;
-
-                    if (isEscapePressed) {
-                      setNewDescription(card.description);
-                      send("IDLE");
-                    }
-                  }}
-                />
-                <Row>
-                  <ApplyButton
-                    label="Apply"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      dispatch(
-                        updateCard(card.id, { description: newDescription })
-                      );
-                      send("IDLE");
-                    }}
-                  />
-                  <Button
-                    label="Cancel"
-                    color="#e74c3c"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setNewDescription(card.description);
-                      send("IDLE");
-                    }}
-                  />
-                </Row>
-              </>
-            ) : (
-              <Description
-                onClick={(event) => {
-                  event.stopPropagation();
-                  send("UPDATE_CARD_DESCRIPTION");
-                }}
-                isEmpty={!card.description}
-              >
-                {card.description || "Enter a description..."}
-              </Description>
-            )}
-          </EditWrapper>
-        </Section>
-        <Section>
-          <SectionHeader>
-            <Icon icon={faCheckSquare} />
-            <Subtitle>Checklist</Subtitle>
-          </SectionHeader>
-          <Progress value={progress} />
-          <DragDropContext onDragEnd={reorder}>
-            <Droppable droppableId={card.id} direction="vertical" type="CHECK">
-              {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps}>
-                  {currentChecks.map((check) => (
-                    <Check
-                      key={check.id}
-                      id={check.id}
-                      index={check.index}
-                      label={check.label}
-                      isChecked={check.isChecked}
-                      onClickCheck={() => {
-                        dispatch(
-                          updateCheck(check.id, { isChecked: !check.isChecked })
-                        );
-                      }}
-                      onClickLabel={() => {
-                        send("UPDATE_CHECK");
-                        setCheckId(check.id);
-                      }}
-                      onClickApplyUpdate={(newLabel) => {
-                        dispatch(updateCheck(check.id, { label: newLabel }));
-                        send("IDLE");
-                      }}
-                      onClickCancelUpdate={() => {
-                        setNewCheck("");
-                        send("IDLE");
-                      }}
-                      onClickDelete={() => dispatch(deleteCheck(check.id))}
-                      isWillUpdateLabel={
-                        current.matches("updateCheck") && checkId === check.id
-                      }
-                    />
-                  ))}
-                  {provided.placeholder}
-                  {current.matches("createCheck") ? (
-                    <EditWrapper>
-                      <Textarea
-                        ref={refInputCheck}
-                        height={48}
-                        placeholder="Add an item"
-                        value={newCheck}
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={(event) => setNewCheck(event.target.value)}
-                        onKeyDown={(event) => {
-                          switch (event.keyCode) {
-                            case 13: // Enter is pressed
-                              dispatch(
-                                createCheck({
-                                  cardId: card.id,
-                                  label: newCheck,
-                                })
-                              );
-                              setTimeout(() => setNewCheck(""), 20);
-                              break;
-
-                            case 27: // Escape is pressed
-                              setNewCheck("");
-                              send("IDLE");
-                              break;
-
-                            default:
-                              break;
-                          }
-                        }}
-                      />
-                      <Row>
-                        <ApplyButton
-                          label="Apply"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            dispatch(
-                              createCheck({ cardId: card.id, label: newCheck })
-                            );
-                            setTimeout(() => setNewCheck(""), 20);
-                          }}
-                        />
-                        <Button
-                          label="Cancel"
-                          color="#e74c3c"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setNewCheck("");
-                            send("IDLE");
-                          }}
-                        />
-                      </Row>
-                    </EditWrapper>
-                  ) : (
-                    <AddCheckButton
-                      label="Add an item"
-                      color="#34495e"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        send("CREATE_CHECK");
-                      }}
-                    />
-                  )}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </Section>
+        <Description
+          refInput={refInputDescription}
+          value={card.description}
+          isEdit={current.matches("updateCardDescription")}
+          onClick={() => send("UPDATE_CARD_DESCRIPTION")}
+          onClickCancel={() => send("IDLE")}
+          onClickApply={updateCardDescription}
+        />
+        <CheckList
+          refInput={refInputCheck}
+          card={card}
+          items={checks}
+          progress={progress}
+          isCreate={current.matches("createCheck")}
+          isEdit={current.matches("updateCheck")}
+          onDragEnd={updateCheckOrder}
+          onClickAdd={() => send("CREATE_CHECK")}
+          onClickCancelAdd={() => send("IDLE")}
+          onClickApplyAdd={addNewCheck}
+          onClickCheckItem={toggleCheck}
+          onClickLabelItem={() => send("UPDATE_CHECK")}
+          onClickApplyUpdateItem={updateCheckLabel}
+          onClickCancelUpdateItem={() => send("IDLE")}
+          onClickDeleteItem={removeCheck}
+        />
       </Container>
     </Modal>
   );

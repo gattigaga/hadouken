@@ -114,11 +114,25 @@ const Header = ({
             }}
           />
         ) : (
-          <Name onClick={onClickTitle}>{title}</Name>
+          <Name
+            onClick={(event) => {
+              event.stopPropagation();
+              onClickTitle();
+            }}
+          >
+            {title}
+          </Name>
         )}
         <GroupName>
           in group <strong>{groupName}</strong>{" "}
-          <DeleteButton onClick={onClickDelete}>(Delete)</DeleteButton>
+          <DeleteButton
+            onClick={(event) => {
+              event.stopPropagation();
+              onClickDelete();
+            }}
+          >
+            (Delete)
+          </DeleteButton>
         </GroupName>
       </NameWrapper>
       <CloseButton onClick={onClickClose}>

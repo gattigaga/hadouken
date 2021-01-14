@@ -50,17 +50,17 @@ const CreateCheckForm = ({ refInput, onClickApply, onClickCancel }) => {
           switch (event.keyCode) {
             case 13: // Enter is pressed
               onClickApply(newCheck);
+              setNewCheck("");
               break;
 
             case 27: // Escape is pressed
               onClickCancel();
+              setNewCheck("");
               break;
 
             default:
               break;
           }
-
-          setNewCheck("");
         }}
       />
       <Row>

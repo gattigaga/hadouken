@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import chroma from "chroma-js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "../common/Button";
 
@@ -22,19 +21,15 @@ const Title = styled.h1`
   color: white;
 `;
 
-const ButtonBack = styled.button`
-  margin-right: 24px;
-  border: 0px;
-  background: none;
-  cursor: pointer;
+const ButtonBack = styled(Button)`
+  margin-right: 8px;
 `;
 
-const IconBack = styled(FontAwesomeIcon)`
-  font-size: 32px;
-  color: ${chroma("#3498db").brighten(0.5).hex()};
+const ButtonDelete = styled(Button)`
+  margin-right: 18px;
 `;
 
-const IconDelete = styled(FontAwesomeIcon)`
+const Icon = styled(FontAwesomeIcon)`
   font-size: 16px;
   color: white;
 `;
@@ -55,10 +50,6 @@ const Input = styled.input`
   color: white;
 `;
 
-const StyledButton = styled(Button)`
-  margin-left: 32px;
-`;
-
 const Header = ({
   refInput,
   title,
@@ -76,15 +67,22 @@ const Header = ({
 
   return (
     <Container>
-      <ButtonBack>
-        <IconBack
-          icon={faChevronLeft}
-          onClick={(event) => {
-            event.stopPropagation();
-            onClickBack();
-          }}
-        />
-      </ButtonBack>
+      <ButtonBack
+        label={<Icon icon={faChevronLeft} />}
+        color="#5cb5fa"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClickBack();
+        }}
+      />
+      <ButtonDelete
+        label={<Icon icon={faTimes} />}
+        color="#5cb5fa"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClickDelete();
+        }}
+      />
       {isEdit ? (
         <Input
           ref={refInput}
@@ -115,14 +113,6 @@ const Header = ({
           {title}
         </Title>
       )}
-      <StyledButton
-        label={<IconDelete icon={faTrash} />}
-        color="#5cb5fa"
-        onClick={(event) => {
-          event.stopPropagation();
-          onClickDelete();
-        }}
-      />
     </Container>
   );
 };

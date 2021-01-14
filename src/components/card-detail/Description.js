@@ -108,7 +108,13 @@ const Description = ({
             </Row>
           </>
         ) : (
-          <Text onClick={onClick} isEmpty={!newValue}>
+          <Text
+            onClick={(event) => {
+              event.stopPropagation();
+              onClick();
+            }}
+            isEmpty={!newValue}
+          >
             {newValue || "Enter a description..."}
           </Text>
         )}

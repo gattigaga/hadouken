@@ -1,14 +1,14 @@
 # Hadouken
 
-Hadouken is a task manager web app (Trello clone).
+Hadouken is a task manager app created in ReactJS.
 
 ![hadouken](./thumbnail.png)
 
 ### Features
 
-- Create, update and delete Board, List, and Card
-- Drag and drop List and Card
-- Data saved in your browser
+- Create, update and delete Board, Group, and Card
+- Drag and drop Group and Card
+- Data saved in your browser (via Local Storage)
 
 ### Demo
 
@@ -19,5 +19,6 @@ https://gattigaga.github.io/hadouken/
 To run this project, just run this command in your Terminal :
 
 ```bash
+npm install
 npm start
 ```

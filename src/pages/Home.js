@@ -49,6 +49,11 @@ const Home = () => {
   const boards = useSelector((state) => state.boards);
   const dispatch = useDispatch();
 
+  const addNewBoard = (name) => {
+    dispatch(createBoard({ name }));
+    setIsCreateOpen(false);
+  };
+
   return (
     <Container>
       <Helmet>
@@ -66,10 +71,7 @@ const Home = () => {
       </Wrapper>
       <ModalCreateBoard
         onClickClose={() => setIsCreateOpen(false)}
-        onClickCreate={(boardName) => {
-          dispatch(createBoard({ name: boardName }));
-          setIsCreateOpen(false);
-        }}
+        onClickCreate={addNewBoard}
         isOpen={isCreateOpen}
       />
     </Container>

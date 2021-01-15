@@ -9,13 +9,13 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/Button";
 
 const Board = styled.div`
-  width: 320px;
-  height: 96px;
+  width: 100%;
+  height: 140px;
   background: #3498db;
   border-radius: 4px;
   box-sizing: border-box;
   padding: 12px;
-  margin: 16px 0px;
+  margin-bottom: 16px;
   display: flex;
   align-items: flex-start;
 `;
@@ -47,9 +47,14 @@ const modalStyles = {
   content: {
     background: "none",
     border: 0,
-    width: 320,
+    width: "calc(100% - 48px)",
+    maxWidth: "280px",
     padding: 0,
-    margin: "auto",
+    transform: "translateX(-50%)",
+    top: 48,
+    left: "50%",
+    right: "50%",
+    bottom: "auto",
   },
 };
 

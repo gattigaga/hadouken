@@ -15,10 +15,14 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: 800px;
+  width: calc(100% - 48px);
   margin: auto;
   padding-top: 48px;
   padding-bottom: 96px;
+
+  @media screen and (min-width: 1024px) {
+    width: 1024px;
+  }
 `;
 
 const Title = styled.h1`
@@ -28,12 +32,25 @@ const Title = styled.h1`
   margin-top: 0px;
   margin-bottom: 0px;
   color: #333;
+  text-align: center;
 `;
 
 const BoardList = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 180px);
-  grid-gap: 26px;
+  grid-template-columns: repeat(1, 1fr);
+  grid-gap: 24px;
+
+  @media screen and (min-width: 540px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (min-width: 800px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media screen and (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 `;
 
 const CreatorName = styled.p`
@@ -42,6 +59,7 @@ const CreatorName = styled.p`
   color: #aaa;
   margin-top: 0px;
   margin-bottom: 48px;
+  text-align: center;
 `;
 
 const Home = () => {

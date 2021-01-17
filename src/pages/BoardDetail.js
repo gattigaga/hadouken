@@ -35,16 +35,18 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: calc(100vw - 64px);
-  margin: auto;
+  width: calc(100vw - 48px);
+  height: 100vh;
+  margin: 0px auto;
   padding-top: 48px;
+  box-sizing: border-box;
 `;
 
 const GroupWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   overflow-x: auto;
-  height: 80vh;
+  height: calc(100% - 80px);
 
   &::-webkit-scrollbar {
     height: 10px;

@@ -29,6 +29,7 @@ const CloseButton = styled.button`
   border: 0px;
   margin-top: -4px;
   margin-right: -4px;
+  background: none;
 `;
 
 const NameWrapper = styled.div`

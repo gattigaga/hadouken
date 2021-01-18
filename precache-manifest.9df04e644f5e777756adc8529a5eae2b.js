@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "b2644b059de7768c2f8d0d088b5ea8f1",
+    "revision": "e90e308e734cf928cc6b90210d8a8e26",
     "url": "/hadouken/index.html"
   },
   {
-    "revision": "0ac506fe82f78d2f9a98",
+    "revision": "4b82e8c0ca3ca21e7631",
     "url": "/hadouken/static/css/2.2d1a7744.chunk.css"
   },
   {
-    "revision": "0ac506fe82f78d2f9a98",
-    "url": "/hadouken/static/js/2.b147f9de.chunk.js"
+    "revision": "4b82e8c0ca3ca21e7631",
+    "url": "/hadouken/static/js/2.4b03081b.chunk.js"
   },
   {
     "revision": "6b4e435301ed09c996f61d4d5d63f40e",
-    "url": "/hadouken/static/js/2.b147f9de.chunk.js.LICENSE"
+    "url": "/hadouken/static/js/2.4b03081b.chunk.js.LICENSE"
   },
   {
-    "revision": "79616f243b70c1add722",
-    "url": "/hadouken/static/js/main.3dc1b7ab.chunk.js"
+    "revision": "e861c2bdd679092dedea",
+    "url": "/hadouken/static/js/main.c9aa3168.chunk.js"
   },
   {
     "revision": "8fae03486416c88541dc",

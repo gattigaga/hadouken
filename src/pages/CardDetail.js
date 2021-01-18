@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
+import chroma from "chroma-js";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Machine } from "xstate";
@@ -20,12 +21,27 @@ import {
 } from "../store/actionCreators";
 
 const Container = styled.div`
-  width: 640px;
-  min-height: 320px;
+  width: 100%;
+  height: 100%;
   padding: 24px;
   background: #eee;
   border-radius: 4px;
   box-sizing: border-box;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background: #eee;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: ${chroma("#eee").darken(0.5).hex()};
+  }
 `;
 
 const modalStyles = {
@@ -35,9 +51,15 @@ const modalStyles = {
   content: {
     background: "none",
     border: 0,
-    width: 640,
+    borderRadius: 0,
+    width: "calc(100% - 48px)",
+    maxWidth: 640,
     padding: 0,
     margin: "auto",
+    left: 24,
+    right: 24,
+    top: 24,
+    bottom: 24,
   },
 };
 

@@ -25,7 +25,7 @@ const Text = styled.p`
   font-size: 14px;
   color: #777;
   margin: 0px;
-  word-break: break-all;
+  line-height: 1.5em;
 `;
 
 const Icon = styled(FontAwesomeIcon)`

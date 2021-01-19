@@ -22,7 +22,7 @@ import {
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;
+  max-height: calc(100vh - 48px);
   padding: 24px;
   background: #eee;
   border-radius: 4px;

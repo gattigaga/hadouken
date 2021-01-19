@@ -256,7 +256,7 @@ export const cards = (state = [], action) => {
           (item) => !payload.includes(item.id)
         );
 
-        const cards = state.find((item) => payload.includes(item.id));
+        const cards = state.filter((item) => payload.includes(item.id));
 
         // Get current group's cards
         // assign new index for the cards
@@ -354,7 +354,7 @@ export const checks = (state = [], action) => {
           (item) => !payload.includes(item.id)
         );
 
-        const checks = state.find((item) => payload.includes(item.id));
+        const checks = state.filter((item) => payload.includes(item.id));
 
         // Get current card's checks
         // assign new index for the checks

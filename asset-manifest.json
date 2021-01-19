@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.js": "/hadouken/static/js/main.9dbb529e.chunk.js",
-    "main.js.map": "/hadouken/static/js/main.9dbb529e.chunk.js.map",
+    "main.js": "/hadouken/static/js/main.568e8689.chunk.js",
+    "main.js.map": "/hadouken/static/js/main.568e8689.chunk.js.map",
     "runtime-main.js": "/hadouken/static/js/runtime-main.e13fda8e.js",
     "runtime-main.js.map": "/hadouken/static/js/runtime-main.e13fda8e.js.map",
     "static/css/2.2d1a7744.chunk.css": "/hadouken/static/css/2.2d1a7744.chunk.css",
     "static/js/2.4b03081b.chunk.js": "/hadouken/static/js/2.4b03081b.chunk.js",
     "static/js/2.4b03081b.chunk.js.map": "/hadouken/static/js/2.4b03081b.chunk.js.map",
     "index.html": "/hadouken/index.html",
-    "precache-manifest.526d270cca098c9612a7d264b71cbde3.js": "/hadouken/precache-manifest.526d270cca098c9612a7d264b71cbde3.js",
+    "precache-manifest.6af747e72e1a53af745f782eb9d6c53b.js": "/hadouken/precache-manifest.6af747e72e1a53af745f782eb9d6c53b.js",
     "service-worker.js": "/hadouken/service-worker.js",
     "static/css/2.2d1a7744.chunk.css.map": "/hadouken/static/css/2.2d1a7744.chunk.css.map",
     "static/js/2.4b03081b.chunk.js.LICENSE": "/hadouken/static/js/2.4b03081b.chunk.js.LICENSE",
@@ -18,6 +18,6 @@
     "static/js/runtime-main.e13fda8e.js",
     "static/css/2.2d1a7744.chunk.css",
     "static/js/2.4b03081b.chunk.js",
-    "static/js/main.9dbb529e.chunk.js"
+    "static/js/main.568e8689.chunk.js"
   ]
 }

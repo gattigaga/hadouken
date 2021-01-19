@@ -189,6 +189,8 @@ const CardDetail = () => {
   };
 
   const addNewCheck = (label) => {
+    if (!label) return;
+
     dispatch(createCheck({ cardId: card.id, label }));
   };
 

@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "5000f7a21bd6a231639110a003987fc8",
+    "revision": "2433d361aa3d095f38f4ab8112b02db0",
     "url": "/hadouken/index.html"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/hadouken/static/js/2.4b03081b.chunk.js.LICENSE"
   },
   {
-    "revision": "71251d8a85c1f0073426",
-    "url": "/hadouken/static/js/main.a943f784.chunk.js"
+    "revision": "da462ff18bc2b2131947",
+    "url": "/hadouken/static/js/main.3ed65897.chunk.js"
   },
   {
     "revision": "8fae03486416c88541dc",

@@ -79,7 +79,7 @@ const Home = () => {
       </Helmet>
       <Wrapper>
         <Title>Hadouken</Title>
-        <CreatorName>Created by Gattigaga Hayyuta Dewa</CreatorName>
+        <CreatorName>By Gattigaga Hayyuta Dewa</CreatorName>
         <BoardList>
           {boards.map((board) => (
             <Board key={board.id} name={board.name} to={board.slug} />
